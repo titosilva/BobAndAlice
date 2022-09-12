@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BobAndAlice.Core", "BobAndAlice.Core\BobAndAlice.Core.csproj", "{1C06C420-938D-42E7-9840-FABC91BAA73E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BobAndAlice.Core.Tests", "BobAndAlice.Core.Tests\BobAndAlice.Core.Tests.csproj", "{DC923FAE-1298-422A-83FC-B39AAD3A532A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1C06C420-938D-42E7-9840-FABC91BAA73E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C06C420-938D-42E7-9840-FABC91BAA73E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C06C420-938D-42E7-9840-FABC91BAA73E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C06C420-938D-42E7-9840-FABC91BAA73E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC923FAE-1298-422A-83FC-B39AAD3A532A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC923FAE-1298-422A-83FC-B39AAD3A532A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC923FAE-1298-422A-83FC-B39AAD3A532A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC923FAE-1298-422A-83FC-B39AAD3A532A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

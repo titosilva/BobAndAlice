@@ -1,0 +1,16 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=31217306_002D6c20_002D4fa6_002Dbeb4_002D4ff7bfbe71ec/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="MillerRabinTest__ShouldReturnTrue__ForSmallPrimes #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::DC923FAE-1298-422A-83FC-B39AAD3A532A::net5.0::BobAndAlice.Core.Tests.Maths.MillerRabinTest.MillerRabinTest__ShouldReturnTrue__ForSmallPrimes&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=3398c473_002Da345_002D4027_002D83c8_002D0d21dea593ba/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="MillerRabinTest__ShouldReturnTrue__ForSmallPrimes #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::DC923FAE-1298-422A-83FC-B39AAD3A532A::net5.0::BobAndAlice.Core.Tests.Maths.MillerRabinTest.MillerRabinTest__ShouldReturnTrue__ForSmallPrimes&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b7c43cf6_002Dd2bf_002D4b17_002Daf0d_002D3e5f2198fd2b/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="MillerRabinTest__ShouldReturnTrue__ForSmallPrimes" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::DC923FAE-1298-422A-83FC-B39AAD3A532A::net5.0::BobAndAlice.Core.Tests.Maths.MillerRabinTest&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
