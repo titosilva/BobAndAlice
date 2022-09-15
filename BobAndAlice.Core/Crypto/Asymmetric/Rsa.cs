@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Numerics;
 using BobAndAlice.Core.Maths;
 
@@ -25,17 +26,30 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
             BigInteger result;
             do
             {
-                result = prng.Next(keyBytesSize);
-
-                // Never go on with even numbers
-                if (result.IsEven)
-                {
-                    // If an even number is generated, turn it into an odd number
-                    result += 1;
-                }
-
+                result = generatePossiblePrimeNumber(prng, keyBytesSize);
                 counter++;
             } while (!primalityTest.IsPrime(result));
+
+            return result;
+        }
+
+        private static BigInteger generatePossiblePrimeNumber(Prng prng, int bytesSize)
+        {
+            BigInteger result;
+
+            do
+            {
+                result = prng.Next(bytesSize);
+
+                foreach (var smallPrime in Constants.SmallPrimes100)
+                {
+                    if (result % smallPrime == 0)
+                    {
+                        result = 0;
+                        break;
+                    }
+                }
+            } while (result == 0);
 
             return result;
         }

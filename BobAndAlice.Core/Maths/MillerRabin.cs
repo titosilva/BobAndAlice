@@ -8,6 +8,11 @@ namespace BobAndAlice.Core.Maths
     {
         public bool IsPrime(BigInteger number, int maxRounds = 20)
         {
+            if (number.IsEven)
+            {
+                return false;
+            }
+
             var oddExponent = findHighestOddDivisor(number - 1, out var divisionsBy2);
             var isComposite = false;
 
@@ -21,9 +26,9 @@ namespace BobAndAlice.Core.Maths
                     continue;
                 }
 
+                isComposite = true;
                 for (int j = 0; j < divisionsBy2 - 1; j++)
                 {
-                    isComposite = true;
                     mod = BigInteger.ModPow(mod, 2, number);
                     if (mod == number - 1)
                     {
