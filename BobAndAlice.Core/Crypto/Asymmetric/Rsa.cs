@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using BobAndAlice.Core.Maths;
 
 namespace BobAndAlice.Core.Crypto.Asymmetric
@@ -9,28 +12,46 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
         public RsaKeyPair Keys { get; set; }
 
         #region Key Generation
-        
-        public static RsaKeyPair GenerateKeys(int keyBytesSize = 1025)
+        private readonly static ConcurrentDictionary<BigInteger, bool> usedPrimesFound = new ConcurrentDictionary<BigInteger, bool>();
+
+        public static RsaKeyPair GenerateKeys(int keyBytesSize = 128)
             => new RsaKeyPair()
             {
                 PrivateKey = generateKey(keyBytesSize),
                 PublicKey = generateKey(keyBytesSize),
             };
 
-        private static BigInteger generateKey(int keyBytesSize = 128)
+        private static BigInteger generateKey(int keyBytesSize)
         {
+            var foundPrime = usedPrimesFound.FirstOrDefault(kv => kv.Value == false).Key;
+            if (foundPrime != default) {
+                usedPrimesFound[foundPrime] = true;
+                return foundPrime;
+            }
+
             var prng = new Prng();
             var primalityTest = new MillerRabin();
+            var queue = new ConcurrentQueue<BigInteger>();
 
-            var counter = 0;
-            BigInteger result;
-            do
+            while (true)
             {
-                result = generatePossiblePrimeNumber(prng, keyBytesSize);
-                counter++;
-            } while (!primalityTest.IsPrime(result));
+                fillQueueWithPossiblePrimes(queue, prng, keyBytesSize);
 
-            return result;
+                Parallel.ForEach(queue, (x, i) =>
+                {
+                    if (primalityTest.IsPrime(x) && !usedPrimesFound.ContainsKey(x))
+                    {
+                        usedPrimesFound[x] = false;
+                    };
+                });
+
+                foundPrime = usedPrimesFound.FirstOrDefault(kv => kv.Value == false).Key;
+                if (foundPrime != default)
+                {
+                    usedPrimesFound[foundPrime] = true;
+                    return foundPrime;
+                }
+            }
         }
 
         private static BigInteger generatePossiblePrimeNumber(Prng prng, int bytesSize)
@@ -41,17 +62,24 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
             {
                 result = prng.Next(bytesSize);
 
-                foreach (var smallPrime in Constants.SmallPrimes100)
+                if (BigInteger.GreatestCommonDivisor(result, Constants.SmallPrimesProduct.Value) != 1)
                 {
-                    if (result % smallPrime == 0)
-                    {
-                        result = 0;
-                        break;
-                    }
+                    result = 0;
                 }
             } while (result == 0);
 
             return result;
+        }
+
+        private static void fillQueueWithPossiblePrimes(ConcurrentQueue<BigInteger> queue, Prng prng, int bytesSize, int? quantity = null)
+        {
+            queue.Clear();
+            var possiblePrime = generatePossiblePrimeNumber(prng, bytesSize);
+            for (int i = 0; i < (quantity ?? Environment.ProcessorCount * 6); i++)
+            {
+                possiblePrime += Constants.SmallPrimesProduct.Value;
+                queue.Enqueue(possiblePrime);
+            }
         }
         
         #endregion

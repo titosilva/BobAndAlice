@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace BobAndAlice.Core.Maths
@@ -8,37 +9,48 @@ namespace BobAndAlice.Core.Maths
     {
         public bool IsPrime(BigInteger number, int maxRounds = 20)
         {
-            if (number.IsEven)
+            if (Constants.SmallPrimes.Any(p => number != p && number % p == 0))
             {
                 return false;
             }
 
             var oddExponent = findHighestOddDivisor(number - 1, out var divisionsBy2);
-            var isComposite = false;
+            var random = new Random();
+            var maxRandomNumber = number > 1_000_000 ? 1_000_000 : (int)number;
+            bool isComposite;
 
-            for (int i = 0; i < maxRounds && !isComposite; i++)
+            for (int i = 0; i < maxRounds; i++)
             {
-                var expBase = new Random().Next(2, number > 1000? 1000 : (int) number);
+                var expBase = random.Next(2, maxRandomNumber);
                 var mod = BigInteger.ModPow(expBase, oddExponent, number);
                 
                 if (mod == 1 || mod == number - 1)
                 {
+                    // The number might be prime
                     continue;
                 }
 
                 isComposite = true;
-                for (int j = 0; j < divisionsBy2 - 1; j++)
+                for (int j = 1; j < divisionsBy2; j++)
                 {
-                    mod = BigInteger.ModPow(mod, 2, number);
+                    mod = (mod * mod) % number;
+
+                    // If this condition never happens, then the number is composite
                     if (mod == number - 1)
                     {
                         isComposite = false;
                         break;
                     }
                 }
+
+                if (isComposite)
+                {
+                    // The number is composite
+                    return false;
+                }
             }
 
-            return !isComposite;
+            return true;
         }
 
         private BigInteger findHighestOddDivisor(BigInteger number, out int divisionsBy2)
