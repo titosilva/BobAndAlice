@@ -9,11 +9,6 @@ namespace BobAndAlice.Core.Maths
     {
         public bool IsPrime(BigInteger number, int maxRounds = 20)
         {
-            if (Constants.SmallPrimes.Any(p => number != p && number % p == 0))
-            {
-                return false;
-            }
-
             var oddExponent = findHighestOddDivisor(number - 1, out var divisionsBy2);
             var random = new Random();
             var maxRandomNumber = number > 1_000_000 ? 1_000_000 : (int)number;

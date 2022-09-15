@@ -23,10 +23,10 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
 
         private static BigInteger generateKey(int keyBytesSize)
         {
-            var foundPrime = usedPrimesFound.FirstOrDefault(kv => kv.Value == false).Key;
-            if (foundPrime != default) {
-                usedPrimesFound[foundPrime] = true;
-                return foundPrime;
+
+            if (tryGetAlreadyGeneratedPrime(out var prime))
+            {
+                return prime;
             }
 
             var prng = new Prng();
@@ -45,13 +45,26 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
                     };
                 });
 
-                foundPrime = usedPrimesFound.FirstOrDefault(kv => kv.Value == false).Key;
-                if (foundPrime != default)
+                if (tryGetAlreadyGeneratedPrime(out prime))
                 {
-                    usedPrimesFound[foundPrime] = true;
-                    return foundPrime;
+                    return prime;
                 }
             }
+        }
+
+        private static bool tryGetAlreadyGeneratedPrime(out BigInteger prime)
+        {
+            prime = 0;
+
+            var foundPrime = usedPrimesFound.FirstOrDefault(kv => kv.Value == false).Key;
+            if (foundPrime != default)
+            {
+                prime = foundPrime;
+                usedPrimesFound[prime] = true;
+                return true;
+            }
+
+            return false;
         }
 
         private static BigInteger generatePossiblePrimeNumber(Prng prng, int bytesSize)
