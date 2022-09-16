@@ -40,5 +40,17 @@ namespace BobAndAlice.Core.Tests.Crypto.Asymmetric
             var cipher = rsa.Trapdoor(msg, keyPair.PublicKey);
             Assert.Equal(msg, rsa.Trapdoor(cipher, keyPair.PrivateKey));
         }
+        
+        [Fact]
+        public void TrapdoorPublicKey__ShouldUndo__TrapdoorPrivateKey()
+        {
+            var keyPair = RsaKeyGen.GenerateKeys();
+
+            var msg = new Prng().Next(64);
+            var rsa = new RsaOAEP();
+
+            var cipher = rsa.Trapdoor(msg, keyPair.PrivateKey);
+            Assert.Equal(msg, rsa.Trapdoor(cipher, keyPair.PublicKey));
+        }
     }
 }

@@ -3,5 +3,6 @@
   &lt;TestAncestor&gt;
     &lt;TestId&gt;xUnit::DC923FAE-1298-422A-83FC-B39AAD3A532A::net5.0::BobAndAlice.Core.Tests.Crypto.Asymmetric.RsaTest.GenerateKeys__ShouldReturnRsaKeyPair__WithTwoPrimes&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::DC923FAE-1298-422A-83FC-B39AAD3A532A::net5.0::BobAndAlice.Core.Tests.Maths.MillerRabinTest&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::DC923FAE-1298-422A-83FC-B39AAD3A532A::net5.0::BobAndAlice.Core.Tests.Crypto.Asymmetric.RsaTest.TrapdoorPublicKey__ShouldUndo__TrapdoorPrivateKey&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
