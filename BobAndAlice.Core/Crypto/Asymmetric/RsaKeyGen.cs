@@ -7,19 +7,40 @@ using BobAndAlice.Core.Maths;
 
 namespace BobAndAlice.Core.Crypto.Asymmetric
 {
-    public class Rsa
+    public class RsaKeyGen
     {
-        public RsaKeyPair Keys { get; set; }
-
-        #region Key Generation
+        private readonly static Prng prng = new Prng();
         private readonly static ConcurrentDictionary<BigInteger, bool> usedPrimesFound = new ConcurrentDictionary<BigInteger, bool>();
 
-        public static RsaKeyPair GenerateKeys(int keyBytesSize = 128)
-            => new RsaKeyPair()
+        public static RsaKeyPair GenerateKeys(int primeBytesSize = 128)
+        {
+            var p = generateKey(primeBytesSize);
+            var q = generateKey(primeBytesSize);
+
+            var modulus = p * q;
+            var phiModulus = (p - 1) * (q - 1);
+
+            BigInteger e;
+            BigInteger? d;
+            do
             {
-                PrivateKey = generateKey(keyBytesSize),
-                PublicKey = generateKey(keyBytesSize),
+                do
+                {
+                    e = prng.Next(primeBytesSize >> 2);
+                } while (BigInteger.GreatestCommonDivisor(modulus, phiModulus) != 1);
+
+                d = e.ModInverse(modulus);
+            } while (!d.HasValue);
+
+
+            return new RsaKeyPair()
+            {
+                Primes = (p, q),
+                PublicKey = new RsaKey(modulus, e),
+                PrivateKey = new RsaKey(modulus, d.Value),
             };
+        }
+            
 
         private static BigInteger generateKey(int keyBytesSize)
         {
@@ -29,7 +50,6 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
                 return prime;
             }
 
-            var prng = new Prng();
             var primalityTest = new MillerRabin();
             var queue = new ConcurrentQueue<BigInteger>();
 
@@ -94,7 +114,5 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
                 queue.Enqueue(possiblePrime);
             }
         }
-        
-        #endregion
     }
 }

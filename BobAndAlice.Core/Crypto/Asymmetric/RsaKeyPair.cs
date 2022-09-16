@@ -4,7 +4,8 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
 {
     public class RsaKeyPair
     {
-        public BigInteger PrivateKey { get; set; }
-        public BigInteger PublicKey { get; set; }
+        public (BigInteger, BigInteger) Primes { get; set; }
+        public RsaKey PrivateKey { get; set; }
+        public RsaKey PublicKey { get; set; }
     }
 }

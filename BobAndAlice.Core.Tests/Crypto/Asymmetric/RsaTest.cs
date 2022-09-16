@@ -9,10 +9,22 @@ namespace BobAndAlice.Core.Tests.Crypto.Asymmetric
         [Fact]
         public void GenerateKeys__ShouldReturnRsaKeyPair__WithTwoPrimes()
         {
-            var keyPair = Rsa.GenerateKeys();
+            var keyPair = RsaKeyGen.GenerateKeys();
             var primalityTest = new MillerRabin();
-            Assert.True(primalityTest.IsPrime(keyPair.PrivateKey));
-            Assert.True(primalityTest.IsPrime(keyPair.PublicKey));
+            Assert.True(primalityTest.IsPrime(keyPair.Primes.Item1));
+            Assert.True(primalityTest.IsPrime(keyPair.Primes.Item2));
+        }
+
+        [Fact]
+        public void GenerateKeys__ShouldReturnRsaKeyPair__WithTwoMultiplicativeInversesAndSameModulus()
+        {
+            var keyPair = RsaKeyGen.GenerateKeys();
+
+            var modulus = keyPair.PrivateKey.Modulus;
+            Assert.Equal(modulus, keyPair.PublicKey.Modulus);
+
+            var verification = (keyPair.PrivateKey.Value * keyPair.PublicKey.Value) % modulus;
+            Assert.Equal(1, verification);
         }
     }
 }
