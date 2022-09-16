@@ -5,7 +5,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Crypto\Symmetric" />
+      <Compile Remove="Crypto\Symmetric\**" />
+      <EmbeddedResource Remove="Crypto\Symmetric\**" />
+      <None Remove="Crypto\Symmetric\**" />
     </ItemGroup>
 
 </Project>

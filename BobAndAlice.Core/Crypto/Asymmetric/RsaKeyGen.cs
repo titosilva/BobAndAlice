@@ -18,7 +18,7 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
             var q = generateKey(primeBytesSize);
 
             var modulus = p * q;
-            var phiModulus = (p - 1) * (q - 1);
+            var modulusPhi = (p - 1) * (q - 1);
 
             BigInteger e;
             BigInteger? d;
@@ -27,9 +27,9 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
                 do
                 {
                     e = prng.Next(primeBytesSize >> 2);
-                } while (BigInteger.GreatestCommonDivisor(modulus, phiModulus) != 1);
+                } while (BigInteger.GreatestCommonDivisor(e, modulusPhi) != 1);
 
-                d = e.ModInverse(modulus);
+                d = e.ModInverse(modulusPhi);
             } while (!d.HasValue);
 
 
