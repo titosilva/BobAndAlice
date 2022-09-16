@@ -42,5 +42,19 @@ namespace BobAndAlice.Core.Maths
 
             return t;
         }
+
+        public static Binary ToBinary(this BigInteger number)
+        {
+            var binary = new Binary();
+            var numberCopy = number;
+
+            while (numberCopy > 0)
+            {
+                binary.Content.Add((byte)(numberCopy & 0xff));
+                numberCopy >>= 8;
+            }
+
+            return binary;
+        }
     }
 }

@@ -46,5 +46,31 @@ namespace BobAndAlice.Core.Tests.Maths
                 }
             }
         }
+
+        [Fact]
+        public void ToBinary__ShouldReturnABinary__WithSameBytesAsNumber()
+        {
+            var number = new Prng().Next(1024);
+            var binary = number.ToBinary();
+
+            var byteCount = 0;
+            foreach (var b in binary.Content)
+            {
+                var expectedByte = (byte)((number >> (byteCount * 8)) & 0xff);
+                Assert.Equal(expectedByte, b);
+                byteCount++;
+            }
+        }
+
+        [Fact]
+        public void ToBinaryAndToBigIntegerAreInverses()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                var number = new Prng().Next(1024);
+                var binary = number.ToBinary();
+                Assert.Equal(number, binary.ToBigInteger());
+            }
+        }
     }
 }
