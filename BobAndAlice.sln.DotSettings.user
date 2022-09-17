@@ -1,0 +1,10 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=00dc0333_002D695d_002D4cc8_002D89f3_002D82914c83dc99/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="GenerateKeys__ShouldReturnRsaKeyPair__WithTwoPrimes" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::DC923FAE-1298-422A-83FC-B39AAD3A532A::net5.0::BobAndAlice.Core.Tests.Crypto.Asymmetric.RsaTest.GenerateKeys__ShouldReturnRsaKeyPair__WithTwoPrimes&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::DC923FAE-1298-422A-83FC-B39AAD3A532A::net5.0::BobAndAlice.Core.Tests.Maths.MillerRabinTest&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::DC923FAE-1298-422A-83FC-B39AAD3A532A::net5.0::BobAndAlice.Core.Tests.Crypto.Asymmetric.RsaTest.TrapdoorPublicKey__ShouldUndo__TrapdoorPrivateKey&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::DC923FAE-1298-422A-83FC-B39AAD3A532A::net5.0::BobAndAlice.Core.Tests.Maths.BinaryTests.ToWords__ShouldReturnVector__WithAllBytes&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::DC923FAE-1298-422A-83FC-B39AAD3A532A::net5.0::BobAndAlice.Core.Tests.Maths.BinaryTests.BinaryFromWordsToWords__ShouldKeepSameOriginalWords&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
