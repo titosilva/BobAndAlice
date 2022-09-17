@@ -9,53 +9,64 @@ namespace BobAndAlice.Core.Crypto.Symmetric
 {
     public class AES
     {
-        #region Block sizes supported
-        public enum AESSupportedBlockSizes
+        #region Key sizes supported
+        public enum AESSupportedKeySizes
         {
             Bits128,
             Bits192,
             Bits256,
         }
 
-        public int ToBitSize(AESSupportedBlockSizes blockSize)
-            => blockSize switch
+        public int ToBitSize(AESSupportedKeySizes keySize)
+            => keySize switch
             {
-                AESSupportedBlockSizes.Bits128 => 128,
-                AESSupportedBlockSizes.Bits192 => 192,
-                AESSupportedBlockSizes.Bits256 => 256,
+                AESSupportedKeySizes.Bits128 => 128,
+                AESSupportedKeySizes.Bits192 => 192,
+                AESSupportedKeySizes.Bits256 => 256,
                 _ => throw new ArgumentException("Not supported AES block size"),
             };
 
-        public int ToByteSize(AESSupportedBlockSizes blockSize)
-            => ToBitSize(blockSize) >> 3;
+        public int ToByteSize(AESSupportedKeySizes keySize)
+            => ToBitSize(keySize) >> 3;
         
-        public int ToRounds(AESSupportedBlockSizes blockSize)
-            => blockSize switch
+        public int ToRounds(AESSupportedKeySizes keySize)
+            => keySize switch
             { // Number of rounds needed + initial round
-                AESSupportedBlockSizes.Bits128 => 11, 
-                AESSupportedBlockSizes.Bits192 => 13,
-                AESSupportedBlockSizes.Bits256 => 15,
+                AESSupportedKeySizes.Bits128 => 11, 
+                AESSupportedKeySizes.Bits192 => 13,
+                AESSupportedKeySizes.Bits256 => 15,
                 _ => throw new ArgumentException("Not supported AES block size"),
             };
         #endregion
 
-        private AESSupportedBlockSizes blockSize { get; set; }
+        public AES(AESSupportedKeySizes keySize, Binary key)
+        {
+            if (key.Length != ToByteSize(keySize))
+            {
+                throw new ArgumentException($"Size of block selected must be same size of key");
+            }
 
-        private int blockBytesSize
-            => ToByteSize(blockSize);
+            this.key = key;
+            this.keySize = keySize;
+        }
+
+        private AESSupportedKeySizes keySize { get; set; }
+
+        private int keyBytesSize
+            => ToByteSize(keySize);
 
         private int rounds
-            => ToRounds(blockSize);
+            => ToRounds(keySize);
 
         private int keyWordsLength // Block bytes / 4 = block words = key length
-            => blockBytesSize >> 2;
+            => keyBytesSize >> 2;
 
         private List<UInt32> keyScheduleWords { get; set; } = new List<UInt32>();
         private Binary key { get; set; }
-        
+
         public Binary EncryptBlock(Binary value) {
-            if (value.Length != blockBytesSize) {
-                throw new ArgumentException($"AES block size on selected mode must {blockBytesSize} bytes ({blockBytesSize << 3} bits)");
+            if (value.Length != 16) {
+                throw new ArgumentException($"AES block size on selected mode must 16 bytes (128 bits)");
             }
 
             genKeySchedule();
@@ -68,124 +79,209 @@ namespace BobAndAlice.Core.Crypto.Symmetric
 
             return applyFinalRound(state);
         }
+
+        public Binary DecryptBlock(Binary value)
+        {
+            if (value.Length != 16) {
+                throw new ArgumentException($"AES block size on selected mode must 16 bytes (128 bits)");
+            }
+
+            genKeySchedule();
+
+            var state = value;
+            state = applyInvFinalRound(state);
+            for (int i = rounds - 2; i >= 0; i--) {
+                state = applyInvNormalRound(state, i + 1);
+            }
+
+            return applyInvInitialRound(state); 
+        }
         
+        #region Round types
         private Binary applyInitialRound(Binary state) {
-            return addRoundKey(state, 0);
+            return AddRoundKey(state, 0);
+        }
+
+        private Binary applyInvInitialRound(Binary state)
+        {
+            return AddRoundKey(state, 0);
         }
         
         private Binary applyNormalRound(Binary state, int round) {
             var result = state;
 
-            result = subBytes(result);
-            result = shiftRows(result);
-            result = mixColumns(result);
-            result = addRoundKey(result, round);
+            result = SubBytes(result);
+            result = ShiftRows(result);
+            result = MixColumns(result);
+            result = AddRoundKey(result, round);
 
             return result;
+        }
+
+        private Binary applyInvNormalRound(Binary state, int round)
+        {
+            var result = state;
+
+            result = AddRoundKey(result, round);
+            result = InvMixColumns(result);
+            result = InvShiftRows(result);
+            result = InvSubBytes(result);
+
+            return result;   
         }
 
         private Binary applyFinalRound(Binary state) {
             var result = state;
 
-            result = subBytes(result);
-            result = shiftRows(result);
-            result = addRoundKey(result, rounds - 1);
+            result = SubBytes(result);
+            result = ShiftRows(result);
+            result = AddRoundKey(result, rounds - 1);
 
             return result;
         }
-        
-        private Binary subBytes(Binary state) {
-            var bytes = state.Content;
-            var resultBytes = new List<byte>();
 
-            foreach (var b in bytes)
-            {
-                var lowerNibble = (b & 0x0f);
-                var upperNibble = (b & 0xf0) >> 4;
-                resultBytes.Add(Constants.AES.SBoxTable[upperNibble, lowerNibble]);
-            }
-
-            return new Binary(resultBytes);
-        }
-        
-        private Binary shiftRows(Binary state) {
-            var words = state.ToWords();
-            var resultWords = new List<UInt32>();
-    
-            for (int i = 3; i >= 0; i--) {
-                var word = words[i];
-        
-                if (i == 0) {
-                    // The first row is not shifted
-                    resultWords.Add(word);
-                } else if (i == 1) {
-                    // The second row is shifted one place to the left
-                    resultWords.Add((word << 8) | (word >> 24));
-                } else if (i == 2) {
-                    // The third row is shifted two places to the left
-                    resultWords.Add((word << 16) | (word >> 16));
-                } else if (i == 3) {
-                    // The last row is shifted three places to the left
-                    resultWords.Add((word << 24) | (word >> 8));
-                }
-            }
-
-            return new Binary(resultWords);
-        }
-        
-        
-    // Source of reference for this implementation:
-    // https://en.wikipedia.org/wiki/Rijndael_MixColumns
-        Binary mixColumns(Binary state) {
-            var stateBytes = state.Content;
-            var resultColumns = new List<List<byte>>();
-            var resultBytes = new List<byte>();
-
-            for (int col = 0; col < 4; col++) {
-                // State column
-                var r = new List<byte>();
-                // Computed columns
-                var a = new List<byte>();
-                var b = new List<byte>();
-
-                for (int row = 3; row >= 0; row--) {
-                    r.Add(stateBytes[col + 4 * row]);
-                }
-
-                for (int c = 0; c < 4; c++) {
-                    var h = (r[c] >> 7) & 1;
-                    b[c] = (byte) (r[c] << 1);
-                    b[c] ^= (byte) (h * 0x1B);
-                }
-
-                r[0] = (byte) (b[0] ^ a[3] ^ a[2] ^ b[1] ^ a[1]); /* 2 * a0 + a3 + a2 + 3 * a1 */
-                r[1] = (byte) (b[1] ^ a[0] ^ a[3] ^ b[2] ^ a[2]); /* 2 * a1 + a0 + a3 + 3 * a2 */
-                r[2] = (byte) (b[2] ^ a[1] ^ a[0] ^ b[3] ^ a[3]); /* 2 * a2 + a1 + a0 + 3 * a3 */
-                r[3] = (byte) (b[3] ^ a[2] ^ a[1] ^ b[0] ^ a[0]); /* 2 * a3 + a2 + a1 + 3 * a0 */
-
-                resultColumns.Insert(0, r);
-            }
-
-            for (int row = 0; row < 4; row++) {
-                for (int col = 0; col < 4; col++) {
-                    resultBytes.Insert(0, resultColumns[col][row]);
-                }
-            }
-
-            return new Binary(resultBytes);
-        }
-
-        private Binary addRoundKey(Binary state, int round)
+        private Binary applyInvFinalRound(Binary state)
         {
-            var roundKey = new Binary(keyScheduleWords[round]);
+            var result = state;
+
+            result = AddRoundKey(result, rounds - 1);
+            result = InvShiftRows(result);
+            result = InvSubBytes(result);
+            
+            return result;
+        }
+        #endregion
+        
+        #region SubBytes
+        public byte SubByte(byte b) {
+            var lowerNibble = (b & 0x0f);
+            var upperNibble = (b & 0xf0) >> 4;
+            return Constants.AES.SBoxTable[upperNibble, lowerNibble];
+        }
+
+        public byte InvSubByte(byte b)
+        {
+            var lowerNibble = (b & 0x0f);
+            var upperNibble = (b & 0xf0) >> 4;
+            return Constants.AES.InvSBoxTable[upperNibble, lowerNibble];
+        }
+        
+        public Binary SubBytes(Binary state)
+        {
+            return new Binary(state.Content.Select(SubByte).ToList());
+        }
+
+        public Binary InvSubBytes(Binary state)
+        {
+            return new Binary(state.Content.Select(InvSubByte).ToList());
+        }
+        #endregion
+
+        #region ShiftRows
+        public UInt32 ShiftRow(UInt32 row, int shift)
+        {
+            return (row << (shift * 8)) | (row >> ((4 - shift) * 8));
+        }
+        
+        public Binary ShiftRows(Binary state)
+        {
+            return new Binary(state.ToWords().Select(ShiftRow).ToList());
+        }
+        
+        public UInt32 InvShiftRow(UInt32 row, int shift)
+        {
+            return (row >> (shift * 8)) | (row << ((4 - shift) * 8));
+        }
+
+        public Binary InvShiftRows(Binary state)
+        {
+            return new Binary(state.ToWords().Select(InvShiftRow).ToList());
+        }
+        #endregion
+
+        #region MixColumns
+        public byte MultiplyColumnGF(List<byte> column, byte[] coefficients)
+        {
+            byte result = 0;
+            
+            for (int i = 0; i < coefficients.Length; i++)
+            {
+                result ^= GaloisFields.Multiply256(column[i], coefficients[i]);
+            }
+
+            return result;
+        }
+
+        // Source of reference for this implementation:
+        // https://en.wikipedia.org/wiki/Rijndael_MixColumns
+        public Binary MixColumns(Binary state)
+        {
+            var stateBytes = new List<byte>(state.Content);
+            var resultBytes = new List<byte>()
+            {
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+            };
+
+            for (int colIdx = 0; colIdx < 4; colIdx++)
+            {
+                var col = stateBytes.Where((_, idx) => (idx % 4) == colIdx).ToList();
+                
+                resultBytes[0 + colIdx] = MultiplyColumnGF(col, new byte[] {0x02, 0x03, 0x01, 0x01});
+                resultBytes[4 + colIdx] = MultiplyColumnGF(col, new byte[] {0x01, 0x02, 0x03, 0x01});
+                resultBytes[8 + colIdx] = MultiplyColumnGF(col, new byte[] {0x01, 0x01, 0x02, 0x03});
+                resultBytes[12 + colIdx] = MultiplyColumnGF(col, new byte[] {0x03, 0x01, 0x01, 0x02});
+            }
+
+            return new Binary(resultBytes);
+        }
+        
+        public Binary InvMixColumns(Binary state)
+        {
+            var stateBytes = new List<byte>(state.Content);
+            var resultBytes = new List<byte>()
+            {
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+            };
+
+            for (int colIdx = 0; colIdx < 4; colIdx++)
+            {
+                var col = stateBytes.Where((_, idx) => (idx % 4) == colIdx).ToList();
+                
+                resultBytes[0 + colIdx] = MultiplyColumnGF(col, new byte[] {0x0e, 0x0b, 0x0d, 0x09});
+                resultBytes[4 + colIdx] = MultiplyColumnGF(col, new byte[] {0x09, 0x0e, 0x0b, 0x0d});
+                resultBytes[8 + colIdx] = MultiplyColumnGF(col, new byte[] {0x0d, 0x09, 0x0e, 0x0b});
+                resultBytes[12 + colIdx] = MultiplyColumnGF(col, new byte[] {0x0b, 0x0d, 0x09, 0x0e});
+            }
+
+            return new Binary(resultBytes);
+        }
+        #endregion
+
+        #region AddRoundKey
+        public Binary AddRoundKey(Binary state, int round)
+        {
+            var roundKey = new Binary( new List<uint>()
+            {
+                keyScheduleWords[round * 4],
+                keyScheduleWords[round*4 + 1],
+                keyScheduleWords[round*4 + 2],
+                keyScheduleWords[round*4 + 3]
+            });
             return state ^ roundKey;
         }
+        #endregion
         
+        #region Key schedule generation
         // Source of reference for this implementation:
         // https://en.wikipedia.org/wiki/AES_key_schedule
         void genKeySchedule() {
-            this.keyScheduleWords.Clear();
-
+            keyScheduleWords.Clear();
             // Each round needs a derived key composed of 4 32-bit word
             // So, for instance, we need a key schedule of 11 * 4 = 44 32-bits words for derived keys on AES-128
             for (int i = 0; i < keyWordsLength * rounds; i++) {
@@ -220,16 +316,12 @@ namespace BobAndAlice.Core.Crypto.Symmetric
         
         private UInt32 subWord(UInt32 word) {
             return (uint) (
-                (subByte((byte) ((word & 0xff000000) >> 24)) << 24) |
-                (subByte((byte) ((word & 0x00ff0000) >> 16)) << 16) |
-                (subByte((byte) ((word & 0x0000ff00) >> 8)) << 8) |
-                (subByte((byte) (word & 0x000000ff))));
+                (SubByte((byte) ((word & 0xff000000) >> 24)) << 24) |
+                (SubByte((byte) ((word & 0x00ff0000) >> 16)) << 16) |
+                (SubByte((byte) ((word & 0x0000ff00) >> 8)) << 8) |
+                (SubByte((byte) (word & 0x000000ff))));
         }
         
-        byte subByte(byte b) {
-            var lowerNibble = (b & 0x0f);
-            var upperNibble = (b & 0xf0) >> 4;
-            return Constants.AES.SBoxTable[upperNibble, lowerNibble];
-        }
+        #endregion
     }
 }
