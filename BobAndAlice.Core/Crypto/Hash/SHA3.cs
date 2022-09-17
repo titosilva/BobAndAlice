@@ -20,7 +20,7 @@ namespace BobAndAlice.Core.Crypto.Hash
             Bits512,
         }
 
-        public static int ToInt(SHA3SupportedBitSizes bitSize)
+        public static int ToBitsSize(SHA3SupportedBitSizes bitSize)
             => bitSize switch
             {
                 SHA3SupportedBitSizes.Bits224 => 224,
@@ -29,6 +29,9 @@ namespace BobAndAlice.Core.Crypto.Hash
                 SHA3SupportedBitSizes.Bits512 => 512,
                 _ => throw new ArgumentException("Not supported SHA-3 bit size"),
             };
+
+        public static int ToBytesSize(SHA3SupportedBitSizes bitSize)
+            => ToBitsSize(bitSize) >> 3;
         #endregion
 
         private readonly Sha3Digest digest;
@@ -36,7 +39,7 @@ namespace BobAndAlice.Core.Crypto.Hash
 
         public SHA3(SHA3SupportedBitSizes bitSize)
         {
-            bitsSize = ToInt(bitSize);
+            bitsSize = ToBitsSize(bitSize);
             digest = new Sha3Digest(bitsSize);
         }
 

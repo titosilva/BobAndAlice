@@ -37,8 +37,8 @@ namespace BobAndAlice.Core.Tests.Crypto.Asymmetric
             var msg = new Prng().Next(64);
             var rsa = new RsaOAEP();
 
-            var cipher = rsa.Trapdoor(msg, keyPair.PublicKey);
-            Assert.Equal(msg, rsa.Trapdoor(cipher, keyPair.PrivateKey));
+            var trapdoored = rsa.Trapdoor(msg, keyPair.PublicKey);
+            Assert.Equal(msg, rsa.Trapdoor(trapdoored, keyPair.PrivateKey));
         }
         
         [Fact]
@@ -46,11 +46,26 @@ namespace BobAndAlice.Core.Tests.Crypto.Asymmetric
         {
             var keyPair = RsaKeyGen.GenerateKeys();
 
-            var msg = new Prng().Next(64);
             var rsa = new RsaOAEP();
+            var msg = new Prng().Next(rsa.MessageBytesSize);
 
-            var cipher = rsa.Trapdoor(msg, keyPair.PrivateKey);
-            Assert.Equal(msg, rsa.Trapdoor(cipher, keyPair.PublicKey));
+            var trapdoored = rsa.Trapdoor(msg, keyPair.PrivateKey);
+            Assert.Equal(msg, rsa.Trapdoor(trapdoored, keyPair.PublicKey));
+        }
+
+        [Fact]
+        public void RsaOAEPEncrypt__ShouldReturnValue__DecryptedByRsaOAEPDecrypt()
+        {
+            var keyPair = RsaKeyGen.GenerateKeys();
+
+            var rsa = new RsaOAEP();
+            var msg = new Prng().Next(rsa.MessageBytesSize).ToBinary();
+
+            var cipher = rsa.Encrypt(msg, keyPair.PublicKey);
+            Assert.Equal(msg.Content, rsa.Decrypt(cipher, keyPair.PrivateKey).Content);
+
+            cipher = rsa.Encrypt(msg, keyPair.PrivateKey);
+            Assert.Equal(msg.Content, rsa.Decrypt(cipher, keyPair.PublicKey).Content);
         }
     }
 }
