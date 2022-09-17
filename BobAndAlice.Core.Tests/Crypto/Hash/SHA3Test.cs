@@ -20,7 +20,7 @@ namespace BobAndAlice.Core.Tests.Crypto.Hash
             var sha3 = new SHA3(SHA3.SHA3SupportedBitSizes.Bits224);
             var result = sha3.Hash(prng.Next(random.Next(256, 1024)).ToBinary());
             
-            Assert.Equal(SHA3.ToInt(SHA3.SHA3SupportedBitSizes.Bits224) >> 3, result.Length);
+            Assert.Equal(224 >> 3, result.Length);
         }
     }
 }
