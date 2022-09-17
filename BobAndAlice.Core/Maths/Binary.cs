@@ -19,7 +19,15 @@ namespace BobAndAlice.Core.Maths
             Content = new List<byte>(bin.Content);
         }
 
+        public Binary(byte[] bin)
+        {
+            Content = new List<byte>(bin);
+        }
+
         public List<byte> Content { get; set; } = new List<byte>();
+
+        public int Length
+            => Content.Count;
 
         public Binary GetReversed()
         {
