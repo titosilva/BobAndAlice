@@ -5,12 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="Crypto\Symmetric\**" />
-      <EmbeddedResource Remove="Crypto\Symmetric\**" />
-      <None Remove="Crypto\Symmetric\**" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="BouncyCastle" Version="1.8.9" />
     </ItemGroup>
 
