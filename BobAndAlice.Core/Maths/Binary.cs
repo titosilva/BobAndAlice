@@ -10,6 +10,11 @@ namespace BobAndAlice.Core.Maths
     public class Binary
     {
         #region Constructors
+        public Binary()
+        {
+            Content = new List<byte>();
+        }
+
         // If multiple binaries are received, concatenate them
         public Binary(params Binary[] bins)
         {
@@ -22,7 +27,7 @@ namespace BobAndAlice.Core.Maths
             }
         }
 
-        public Binary(byte[] bin)
+        public Binary(params byte[] bin)
         {
             Content = new List<byte>(bin);
         }
@@ -127,6 +132,42 @@ namespace BobAndAlice.Core.Maths
         #region Operators
         public static Binary operator ^(Binary bin1, Binary bin2)
             => new Binary(bin1.Content.Select((value, index) => (byte)(value ^ bin2.Content[index])).ToList());
+
+        public static bool operator ==(Binary bin1, Binary bin2)
+        {
+            if (bin1.Length != bin2.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < bin1.Length; i++)
+            {
+                if (bin1.Content[i] != bin2.Content[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static bool operator !=(Binary bin1, Binary bin2)
+        {
+            if (bin1.Length != bin2.Length)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < bin1.Length; i++)
+            {
+                if (bin1.Content[i] != bin2.Content[i])
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
         #endregion
     }
 }

@@ -111,7 +111,7 @@ namespace BobAndAlice.Core.Crypto.Symmetric
         {
             if (key.Length != ToByteSize(KeySize))
             {
-                throw new ArgumentException($"Size of block selected must be same size of key");
+                throw new ArgumentException($"Size of provided key must be {ToByteSize(KeySize)}");
             }
 
             if (value.Length != 16)
