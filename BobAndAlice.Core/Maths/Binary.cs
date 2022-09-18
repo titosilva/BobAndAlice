@@ -67,6 +67,19 @@ namespace BobAndAlice.Core.Maths
             }
         }
 
+        public List<Binary> Split(int splitBytesSize)
+        {
+            var result = new List<Binary>();
+
+            while (result.Sum(bin => bin.Length) < Length)
+            {
+                var nextPiece = Content.Skip(result.Count * splitBytesSize).Take(splitBytesSize).ToList();
+                result.Add(new Binary(nextPiece));
+            }
+
+            return result;
+        }
+
         public Binary GetReversed()
         {
             var copy = new Binary(this);

@@ -51,6 +51,33 @@ namespace BobAndAlice.Core.Crypto.Symmetric
             genKeySchedule();
         }
 
+        public Binary Encrypt(Binary bin)
+        {
+            var toEncryptBlocks = bin.Split(16);
+
+            if (toEncryptBlocks.Any(block => block.Length != 16))
+            {
+                // The user must pad their data themselves, so we don't affect theirs encodings
+                throw new ArgumentException("Please, provide an input with a bytes length divisible by 16");
+            }
+
+            return new Binary(toEncryptBlocks.Select(block => EncryptBlock(block)).ToArray());
+        }
+
+        public Binary Decrypt(Binary bin)
+        {
+            var toDecryptBlocks = bin.Split(16);
+
+            if (toDecryptBlocks.Any(block => block.Length != 16))
+            {
+                // The user must pad their data themselves, so we don't affect theirs encodings
+                throw new ArgumentException("Please, provide an input with a bytes length divisible by 16");
+            }
+
+            return new Binary(toDecryptBlocks.Select(block => DecryptBlock(block)).ToArray());
+        }
+
+        #region Properties
         private AESSupportedKeySizes keySize { get; set; }
 
         private int keyBytesSize
@@ -64,6 +91,7 @@ namespace BobAndAlice.Core.Crypto.Symmetric
 
         private List<UInt32> keyScheduleWords { get; set; } = new List<UInt32>();
         private Binary key { get; set; }
+        #endregion
 
         #region Encrypt/Decrypt block
         public Binary EncryptBlock(Binary value) {

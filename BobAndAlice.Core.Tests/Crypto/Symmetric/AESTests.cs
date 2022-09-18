@@ -8,6 +8,31 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
 {
     public class AESTests
     {
+        #region Encrypt/Decrypt
+        [Theory]
+        [InlineData(AES.AESSupportedKeySizes.Bits128)]
+        [InlineData(AES.AESSupportedKeySizes.Bits192)]
+        [InlineData(AES.AESSupportedKeySizes.Bits256)]
+        public void Decrypt__ShouldUndo__Encrypt(AES.AESSupportedKeySizes keySize)
+        {
+            var prng = new Prng();
+            var aes = new AES(keySize, prng.Next(AES.ToByteSize(keySize)).ToBinary());
+
+            for (int i = 0; i < 10; i++)
+            {
+                var blocks = new List<Binary>();
+                for (int j = 0; j < (prng.NextByte() >> 2) + 10; j++)
+                {
+                    blocks.Add(prng.Next(16).ToBinary());
+                }
+                var data = new Binary(blocks.ToArray());
+
+                Assert.Equal(data.Content, aes.Decrypt(aes.Encrypt(data)).Content);
+            }
+        }
+
+        #endregion
+
         #region Encrypt/Decrypt block
 
         [Theory]
