@@ -10,11 +10,14 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
     {
         #region Encrypt/Decrypt block
 
-        [Fact]
-        public void AESDecrypt__ShouldUndo__AESEncrypt()
+        [Theory]
+        [InlineData(AES.AESSupportedKeySizes.Bits128)]
+        [InlineData(AES.AESSupportedKeySizes.Bits192)]
+        [InlineData(AES.AESSupportedKeySizes.Bits256)]
+        public void AESDecrypt__ShouldUndo__AESEncrypt(AES.AESSupportedKeySizes keySize)
         {
             var prng = new Prng();
-            var aes = new AES(AES.AESSupportedKeySizes.Bits128, prng.Next(16).ToBinary());
+            var aes = new AES(keySize, prng.Next(AES.ToByteSize(keySize)).ToBinary());
 
             for (int i = 0; i < 10; i++)
             {
@@ -26,11 +29,14 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
         #endregion
 
         #region Rounds
-        [Fact]
-        public void ApplyInvInitialRound__ShouldUndo__ApplyInitialRound()
+        [Theory]
+        [InlineData(AES.AESSupportedKeySizes.Bits128)]
+        [InlineData(AES.AESSupportedKeySizes.Bits192)]
+        [InlineData(AES.AESSupportedKeySizes.Bits256)]
+        public void ApplyInvInitialRound__ShouldUndo__ApplyInitialRound(AES.AESSupportedKeySizes keySize)
         {
             var prng = new Prng();
-            var aes = new AES(AES.AESSupportedKeySizes.Bits128, prng.Next(16).ToBinary());
+            var aes = new AES(keySize, prng.Next(AES.ToByteSize(keySize)).ToBinary());
 
             for (int i = 0; i <= 10; i++)
             {
@@ -39,11 +45,14 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
             }
         }
 
-        [Fact]
-        public void ApplyInvNormalRound__ShouldUndo__ApplyNormalRound()
+        [Theory]
+        [InlineData(AES.AESSupportedKeySizes.Bits128)]
+        [InlineData(AES.AESSupportedKeySizes.Bits192)]
+        [InlineData(AES.AESSupportedKeySizes.Bits256)]
+        public void ApplyInvNormalRound__ShouldUndo__ApplyNormalRound(AES.AESSupportedKeySizes keySize)
         {
             var prng = new Prng();
-            var aes = new AES(AES.AESSupportedKeySizes.Bits128, prng.Next(16).ToBinary());
+            var aes = new AES(keySize, prng.Next(AES.ToByteSize(keySize)).ToBinary());
 
             for (int round = 0; round < aes.Rounds; round++)
             {
@@ -52,11 +61,14 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
             }
         }
 
-        [Fact]
-        public void ApplyInvFinalRound__ShouldUndo__ApplyFinalRound()
+        [Theory]
+        [InlineData(AES.AESSupportedKeySizes.Bits128)]
+        [InlineData(AES.AESSupportedKeySizes.Bits192)]
+        [InlineData(AES.AESSupportedKeySizes.Bits256)]
+        public void ApplyInvFinalRound__ShouldUndo__ApplyFinalRound(AES.AESSupportedKeySizes keySize)
         {
             var prng = new Prng();
-            var aes = new AES(AES.AESSupportedKeySizes.Bits128, prng.Next(16).ToBinary());
+            var aes = new AES(keySize, prng.Next(AES.ToByteSize(keySize)).ToBinary());
 
             for (int i = 0; i <= 10; i++)
             {
@@ -67,11 +79,14 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
         #endregion
 
         #region SubBytes
-        [Fact]
-        public void SubByte__ShouldReturnByte__BasedOnSBoxTable()
+        [Theory]
+        [InlineData(AES.AESSupportedKeySizes.Bits128)]
+        [InlineData(AES.AESSupportedKeySizes.Bits192)]
+        [InlineData(AES.AESSupportedKeySizes.Bits256)]
+        public void SubByte__ShouldReturnByte__BasedOnSBoxTable(AES.AESSupportedKeySizes keySize)
         {
             var prng = new Prng();
-            var aes = new AES(AES.AESSupportedKeySizes.Bits128, prng.Next(16).ToBinary());
+            var aes = new AES(keySize, prng.Next(AES.ToByteSize(keySize)).ToBinary());
 
             var testPairs = new List<(byte Input, byte ExpectedOutput)>()
             { (0x9a, 0xb8), (0x0f, 0x76),  (0xf8, 0x41), (0xbe, 0xae), };
@@ -82,11 +97,14 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
             }
         }
 
-        [Fact]
-        public void InvSubByte__ShouldReturnByte__BasedOnInvSBoxTable()
+        [Theory]
+        [InlineData(AES.AESSupportedKeySizes.Bits128)]
+        [InlineData(AES.AESSupportedKeySizes.Bits192)]
+        [InlineData(AES.AESSupportedKeySizes.Bits256)]
+        public void InvSubByte__ShouldReturnByte__BasedOnInvSBoxTable(AES.AESSupportedKeySizes keySize)
         {
             var prng = new Prng();
-            var aes = new AES(AES.AESSupportedKeySizes.Bits128, prng.Next(16).ToBinary());
+            var aes = new AES(keySize, prng.Next(AES.ToByteSize(keySize)).ToBinary());
 
             var testPairs = new List<(byte ExpectedOutput, byte Input)>()
                 {(0x9a, 0xb8), (0x0f, 0x76), (0xf8, 0x41), (0xbe, 0xae),};
@@ -99,11 +117,14 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
         #endregion
 
         #region ShiftRows
-        [Fact]
-        public void ShiftRow__ShouldReturnWord__ProperlyShifted()
+        [Theory]
+        [InlineData(AES.AESSupportedKeySizes.Bits128)]
+        [InlineData(AES.AESSupportedKeySizes.Bits192)]
+        [InlineData(AES.AESSupportedKeySizes.Bits256)]
+        public void ShiftRow__ShouldReturnWord__ProperlyShifted(AES.AESSupportedKeySizes keySize)
         {
             var prng = new Prng();
-            var aes = new AES(AES.AESSupportedKeySizes.Bits128, prng.Next(16).ToBinary());
+            var aes = new AES(keySize, prng.Next(AES.ToByteSize(keySize)).ToBinary());
             Assert.Equal((UInt32) 0x01020304, aes.ShiftRow(0x01020304, 0));
             Assert.Equal((UInt32) 0x02030401, aes.ShiftRow(0x01020304, 1));
             Assert.Equal((UInt32) 0x03040102, aes.ShiftRow(0x01020304, 2));
@@ -113,11 +134,14 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
             Assert.Equal((UInt32) 0xA220CB2B, aes.ShiftRow(0x20CB2BA2, 3));
         }
 
-        [Fact]
-        public void InvShiftRow__ShouldUndo__ShiftRow()
+        [Theory]
+        [InlineData(AES.AESSupportedKeySizes.Bits128)]
+        [InlineData(AES.AESSupportedKeySizes.Bits192)]
+        [InlineData(AES.AESSupportedKeySizes.Bits256)]
+        public void InvShiftRow__ShouldUndo__ShiftRow(AES.AESSupportedKeySizes keySize)
         {
             var prng = new Prng();
-            var aes = new AES(AES.AESSupportedKeySizes.Bits128, prng.Next(16).ToBinary());
+            var aes = new AES(keySize, prng.Next(AES.ToByteSize(keySize)).ToBinary());
             Assert.Equal((UInt32) 0x01020304, aes.InvShiftRow(aes.ShiftRow(0x01020304, 0), 0));
             Assert.Equal((UInt32) 0x01020304, aes.InvShiftRow(aes.ShiftRow(0x01020304, 1), 1));
             Assert.Equal((UInt32) 0x01020304, aes.InvShiftRow(aes.ShiftRow(0x01020304, 2), 2));
@@ -127,14 +151,17 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
             Assert.Equal((UInt32) 0x20CB2BA2, aes.InvShiftRow(aes.ShiftRow(0x20CB2BA2, 3), 3));
         }
         #endregion
-        
+
         #region MixColumns
-        [Fact]
-        public void InvMixColumns__ShouldUndo__MixColumns()
+        [Theory]
+        [InlineData(AES.AESSupportedKeySizes.Bits128)]
+        [InlineData(AES.AESSupportedKeySizes.Bits192)]
+        [InlineData(AES.AESSupportedKeySizes.Bits256)]
+        public void InvMixColumns__ShouldUndo__MixColumns(AES.AESSupportedKeySizes keySize)
         {
             var prng = new Prng();
-            var aes = new AES(AES.AESSupportedKeySizes.Bits128, prng.Next(16).ToBinary());
-            
+            var aes = new AES(keySize, prng.Next(AES.ToByteSize(keySize)).ToBinary());
+
             for (int i = 0; i <= 10; i++)
             {
                 var state = prng.Next(16).ToBinary();

@@ -17,7 +17,7 @@ namespace BobAndAlice.Core.Crypto.Symmetric
             Bits256,
         }
 
-        public int ToBitSize(AESSupportedKeySizes keySize)
+        public static int ToBitSize(AESSupportedKeySizes keySize)
             => keySize switch
             {
                 AESSupportedKeySizes.Bits128 => 128,
@@ -26,10 +26,10 @@ namespace BobAndAlice.Core.Crypto.Symmetric
                 _ => throw new ArgumentException("Not supported AES block size"),
             };
 
-        public int ToByteSize(AESSupportedKeySizes keySize)
+        public static int ToByteSize(AESSupportedKeySizes keySize)
             => ToBitSize(keySize) >> 3;
         
-        public int ToRounds(AESSupportedKeySizes keySize)
+        public static int ToRounds(AESSupportedKeySizes keySize)
             => keySize switch
             { // Number of rounds needed + initial round
                 AESSupportedKeySizes.Bits128 => 11, 
@@ -286,7 +286,7 @@ namespace BobAndAlice.Core.Crypto.Symmetric
 
             // Each round needs a derived key composed of 4 32-bit word
             // So, for instance, we need a key schedule of 11 * 4 = 44 32-bits words for derived keys on AES-128
-            for (int i = 0; i < keyWordsLength * Rounds; i++) {
+            for (int i = 0; i < 4 * Rounds; i++) {
                 UInt32 nextWord = 0;
 
                 // For the first 4 words, we just copy from the key
