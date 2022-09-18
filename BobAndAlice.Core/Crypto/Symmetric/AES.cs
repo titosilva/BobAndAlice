@@ -130,16 +130,16 @@ namespace BobAndAlice.Core.Crypto.Symmetric
         #endregion
 
         #region Rounds
-        public Binary ApplyInitialRound(Binary state, List<uint> keySchedule) {
+        public static Binary ApplyInitialRound(Binary state, List<uint> keySchedule) {
             return AddRoundKey(state, 0, keySchedule);
         }
 
-        public Binary ApplyInvInitialRound(Binary state, List<uint> keySchedule)
+        public static Binary ApplyInvInitialRound(Binary state, List<uint> keySchedule)
         {
             return AddRoundKey(state, 0, keySchedule);
         }
         
-        public Binary ApplyNormalRound(Binary state, int round, List<uint> keySchedule) {
+        public static Binary ApplyNormalRound(Binary state, int round, List<uint> keySchedule) {
             var result = state;
 
             result = SubBytes(result);
@@ -150,7 +150,7 @@ namespace BobAndAlice.Core.Crypto.Symmetric
             return result;
         }
 
-        public Binary ApplyInvNormalRound(Binary state, int round, List<uint> keySchedule)
+        public static Binary ApplyInvNormalRound(Binary state, int round, List<uint> keySchedule)
         {
             var result = state;
 
@@ -185,54 +185,54 @@ namespace BobAndAlice.Core.Crypto.Symmetric
         #endregion
         
         #region SubBytes
-        public byte SubByte(byte b) {
+        public static byte SubByte(byte b) {
             var lowerNibble = (b & 0x0f);
             var upperNibble = (b & 0xf0) >> 4;
             return Constants.AES.SBoxTable[upperNibble, lowerNibble];
         }
 
-        public byte InvSubByte(byte b)
+        public static byte InvSubByte(byte b)
         {
             var lowerNibble = (b & 0x0f);
             var upperNibble = (b & 0xf0) >> 4;
             return Constants.AES.InvSBoxTable[upperNibble, lowerNibble];
         }
         
-        public Binary SubBytes(Binary state)
+        public static Binary SubBytes(Binary state)
         {
             return new Binary(state.Content.Select(SubByte).ToList());
         }
 
-        public Binary InvSubBytes(Binary state)
+        public static Binary InvSubBytes(Binary state)
         {
             return new Binary(state.Content.Select(InvSubByte).ToList());
         }
         #endregion
 
         #region ShiftRows
-        public UInt32 ShiftRow(UInt32 row, int shift)
+        public static UInt32 ShiftRow(UInt32 row, int shift)
         {
             return (row << (shift * 8)) | (row >> ((4 - shift) * 8));
         }
         
-        public Binary ShiftRows(Binary state)
+        public static Binary ShiftRows(Binary state)
         {
             return new Binary(state.ToWords().Select(ShiftRow).ToList());
         }
         
-        public UInt32 InvShiftRow(UInt32 row, int shift)
+        public static UInt32 InvShiftRow(UInt32 row, int shift)
         {
             return (row >> (shift * 8)) | (row << ((4 - shift) * 8));
         }
 
-        public Binary InvShiftRows(Binary state)
+        public static Binary InvShiftRows(Binary state)
         {
             return new Binary(state.ToWords().Select(InvShiftRow).ToList());
         }
         #endregion
 
         #region MixColumns
-        public byte MultiplyColumnGF(List<byte> column, byte[] coefficients)
+        public static byte MultiplyColumnGF(List<byte> column, byte[] coefficients)
         {
             byte result = 0;
             
@@ -246,7 +246,7 @@ namespace BobAndAlice.Core.Crypto.Symmetric
 
         // Source of reference for this implementation:
         // https://en.wikipedia.org/wiki/Rijndael_MixColumns
-        public Binary MixColumns(Binary state)
+        public static Binary MixColumns(Binary state)
         {
             var stateBytes = new List<byte>(state.Content);
             var resultBytes = new List<byte>()
@@ -270,7 +270,7 @@ namespace BobAndAlice.Core.Crypto.Symmetric
             return new Binary(resultBytes);
         }
         
-        public Binary InvMixColumns(Binary state)
+        public static Binary InvMixColumns(Binary state)
         {
             var stateBytes = new List<byte>(state.Content);
             var resultBytes = new List<byte>()
@@ -296,7 +296,7 @@ namespace BobAndAlice.Core.Crypto.Symmetric
         #endregion
 
         #region AddRoundKey
-        public Binary AddRoundKey(Binary state, int round, List<uint> keySchedule)
+        public static Binary AddRoundKey(Binary state, int round, List<uint> keySchedule)
         {
             var roundKey = new Binary(new List<uint>()
             {
@@ -330,10 +330,10 @@ namespace BobAndAlice.Core.Crypto.Symmetric
                     nextWord = previousPeriodWord;
 
                     if (i % KeyWordsSize == 0) {
-                        nextWord ^= subWord(rotWord(previousWord));
+                        nextWord ^= SubWord(RotWord(previousWord));
                         nextWord ^= Constants.AES.RoundConstants[i / KeyWordsSize - 1];
                     } else if (KeyWordsSize > 6 && i % KeyWordsSize == 4) {
-                        nextWord ^= subWord(previousWord);
+                        nextWord ^= SubWord(previousWord);
                     } else {
                         nextWord ^= previousWord;
                     }
@@ -345,11 +345,11 @@ namespace BobAndAlice.Core.Crypto.Symmetric
             return keyScheduleWords;
         }
         
-        private UInt32 rotWord(UInt32 word) {
+        private static UInt32 RotWord(UInt32 word) {
             return (word << 8) | (word >> 24);
         }
         
-        private UInt32 subWord(UInt32 word) {
+        private static UInt32 SubWord(UInt32 word) {
             return (uint) (
                 (SubByte((byte) ((word & 0xff000000) >> 24)) << 24) |
                 (SubByte((byte) ((word & 0x00ff0000) >> 16)) << 16) |

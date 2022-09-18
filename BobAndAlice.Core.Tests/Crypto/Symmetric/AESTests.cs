@@ -70,7 +70,7 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
             for (int i = 0; i <= 10; i++)
             {
                 var state = prng.Next(16).ToBinary();
-                Assert.Equal(state.Content, aes.ApplyInvInitialRound(aes.ApplyInitialRound(state, keySchedule), keySchedule).Content);
+                Assert.Equal(state.Content, AES.ApplyInvInitialRound(AES.ApplyInitialRound(state, keySchedule), keySchedule).Content);
             }
         }
 
@@ -88,7 +88,7 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
             for (int round = 0; round < aes.Rounds; round++)
             {
                 var state = prng.Next(16).ToBinary();
-                Assert.Equal(state.Content, aes.ApplyInvNormalRound(aes.ApplyNormalRound(state, round, keySchedule), round, keySchedule).Content);
+                Assert.Equal(state.Content, AES.ApplyInvNormalRound(AES.ApplyNormalRound(state, round, keySchedule), round, keySchedule).Content);
             }
         }
 
@@ -112,92 +112,67 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
         #endregion
 
         #region SubBytes
-        [Theory]
-        [InlineData(AES.AESSupportedKeySizes.Bits128)]
-        [InlineData(AES.AESSupportedKeySizes.Bits192)]
-        [InlineData(AES.AESSupportedKeySizes.Bits256)]
-        public void SubByte__ShouldReturnByte__BasedOnSBoxTable(AES.AESSupportedKeySizes keySize)
+        [Fact]
+        public void SubByte__ShouldReturnByte__BasedOnSBoxTable()
         {
-            var prng = new Prng();
-            var aes = new AES(keySize);
-
             var testPairs = new List<(byte Input, byte ExpectedOutput)>()
             { (0x9a, 0xb8), (0x0f, 0x76),  (0xf8, 0x41), (0xbe, 0xae), };
 
             foreach (var pair in testPairs)
             {
-                Assert.Equal(pair.ExpectedOutput, aes.SubByte(pair.Input));
+                Assert.Equal(pair.ExpectedOutput, AES.SubByte(pair.Input));
             }
         }
 
-        [Theory]
-        [InlineData(AES.AESSupportedKeySizes.Bits128)]
-        [InlineData(AES.AESSupportedKeySizes.Bits192)]
-        [InlineData(AES.AESSupportedKeySizes.Bits256)]
-        public void InvSubByte__ShouldReturnByte__BasedOnInvSBoxTable(AES.AESSupportedKeySizes keySize)
+        [Fact]
+        public void InvSubByte__ShouldReturnByte__BasedOnInvSBoxTable()
         {
-            var aes = new AES(keySize);
-
             var testPairs = new List<(byte ExpectedOutput, byte Input)>()
                 {(0x9a, 0xb8), (0x0f, 0x76), (0xf8, 0x41), (0xbe, 0xae),};
 
             foreach (var pair in testPairs)
             {
-                Assert.Equal(pair.ExpectedOutput, aes.InvSubByte(pair.Input));
+                Assert.Equal(pair.ExpectedOutput, AES.InvSubByte(pair.Input));
             }
         }
         #endregion
 
         #region ShiftRows
-        [Theory]
-        [InlineData(AES.AESSupportedKeySizes.Bits128)]
-        [InlineData(AES.AESSupportedKeySizes.Bits192)]
-        [InlineData(AES.AESSupportedKeySizes.Bits256)]
-        public void ShiftRow__ShouldReturnWord__ProperlyShifted(AES.AESSupportedKeySizes keySize)
+        [Fact]
+        public void ShiftRow__ShouldReturnWord__ProperlyShifted()
         {
-            var aes = new AES(keySize);
-
-            Assert.Equal((UInt32) 0x01020304, aes.ShiftRow(0x01020304, 0));
-            Assert.Equal((UInt32) 0x02030401, aes.ShiftRow(0x01020304, 1));
-            Assert.Equal((UInt32) 0x03040102, aes.ShiftRow(0x01020304, 2));
-            Assert.Equal((UInt32) 0x04010203, aes.ShiftRow(0x01020304, 3)); 
-            Assert.Equal((UInt32) 0x2F9392C0, aes.ShiftRow(0xC02F9392, 1));
-            Assert.Equal((UInt32) 0xAFC7AB30, aes.ShiftRow(0xAB30AFC7, 2));
-            Assert.Equal((UInt32) 0xA220CB2B, aes.ShiftRow(0x20CB2BA2, 3));
+            Assert.Equal((UInt32) 0x01020304, AES.ShiftRow(0x01020304, 0));
+            Assert.Equal((UInt32) 0x02030401, AES.ShiftRow(0x01020304, 1));
+            Assert.Equal((UInt32) 0x03040102, AES.ShiftRow(0x01020304, 2));
+            Assert.Equal((UInt32) 0x04010203, AES.ShiftRow(0x01020304, 3)); 
+            Assert.Equal((UInt32) 0x2F9392C0, AES.ShiftRow(0xC02F9392, 1));
+            Assert.Equal((UInt32) 0xAFC7AB30, AES.ShiftRow(0xAB30AFC7, 2));
+            Assert.Equal((UInt32) 0xA220CB2B, AES.ShiftRow(0x20CB2BA2, 3));
         }
 
-        [Theory]
-        [InlineData(AES.AESSupportedKeySizes.Bits128)]
-        [InlineData(AES.AESSupportedKeySizes.Bits192)]
-        [InlineData(AES.AESSupportedKeySizes.Bits256)]
-        public void InvShiftRow__ShouldUndo__ShiftRow(AES.AESSupportedKeySizes keySize)
+        [Fact]
+        public void InvShiftRow__ShouldUndo__ShiftRow()
         {
-            var aes = new AES(keySize);
-
-            Assert.Equal((UInt32) 0x01020304, aes.InvShiftRow(aes.ShiftRow(0x01020304, 0), 0));
-            Assert.Equal((UInt32) 0x01020304, aes.InvShiftRow(aes.ShiftRow(0x01020304, 1), 1));
-            Assert.Equal((UInt32) 0x01020304, aes.InvShiftRow(aes.ShiftRow(0x01020304, 2), 2));
-            Assert.Equal((UInt32) 0x01020304, aes.InvShiftRow(aes.ShiftRow(0x01020304, 3), 3)); 
-            Assert.Equal((UInt32) 0xC02F9392, aes.InvShiftRow(aes.ShiftRow(0xC02F9392, 1), 1));
-            Assert.Equal((UInt32) 0xAB30AFC7, aes.InvShiftRow(aes.ShiftRow(0xAB30AFC7, 2), 2));
-            Assert.Equal((UInt32) 0x20CB2BA2, aes.InvShiftRow(aes.ShiftRow(0x20CB2BA2, 3), 3));
+            Assert.Equal((UInt32) 0x01020304, AES.InvShiftRow(AES.ShiftRow(0x01020304, 0), 0));
+            Assert.Equal((UInt32) 0x01020304, AES.InvShiftRow(AES.ShiftRow(0x01020304, 1), 1));
+            Assert.Equal((UInt32) 0x01020304, AES.InvShiftRow(AES.ShiftRow(0x01020304, 2), 2));
+            Assert.Equal((UInt32) 0x01020304, AES.InvShiftRow(AES.ShiftRow(0x01020304, 3), 3)); 
+            Assert.Equal((UInt32) 0xC02F9392, AES.InvShiftRow(AES.ShiftRow(0xC02F9392, 1), 1));
+            Assert.Equal((UInt32) 0xAB30AFC7, AES.InvShiftRow(AES.ShiftRow(0xAB30AFC7, 2), 2));
+            Assert.Equal((UInt32) 0x20CB2BA2, AES.InvShiftRow(AES.ShiftRow(0x20CB2BA2, 3), 3));
         }
         #endregion
 
         #region MixColumns
-        [Theory]
-        [InlineData(AES.AESSupportedKeySizes.Bits128)]
-        [InlineData(AES.AESSupportedKeySizes.Bits192)]
-        [InlineData(AES.AESSupportedKeySizes.Bits256)]
-        public void InvMixColumns__ShouldUndo__MixColumns(AES.AESSupportedKeySizes keySize)
+        [Fact]
+        public void InvMixColumns__ShouldUndo__MixColumns()
         {
             var prng = new Prng();
-            var aes = new AES(keySize);
 
             for (int i = 0; i <= 10; i++)
             {
                 var state = prng.Next(16).ToBinary();
-                Assert.Equal(state.Content, aes.InvMixColumns(aes.MixColumns(state)).Content);
+                Assert.Equal(state.Content, AES.InvMixColumns(AES.MixColumns(state)).Content);
             }
         }
         #endregion
