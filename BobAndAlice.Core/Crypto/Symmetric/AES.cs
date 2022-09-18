@@ -48,6 +48,7 @@ namespace BobAndAlice.Core.Crypto.Symmetric
 
             this.key = key;
             this.keySize = keySize;
+            genKeySchedule();
         }
 
         private AESSupportedKeySizes keySize { get; set; }
@@ -55,7 +56,7 @@ namespace BobAndAlice.Core.Crypto.Symmetric
         private int keyBytesSize
             => ToByteSize(keySize);
 
-        private int rounds
+        public int Rounds
             => ToRounds(keySize);
 
         private int keyWordsLength // Block bytes / 4 = block words = key length
@@ -64,20 +65,20 @@ namespace BobAndAlice.Core.Crypto.Symmetric
         private List<UInt32> keyScheduleWords { get; set; } = new List<UInt32>();
         private Binary key { get; set; }
 
+        #region Encrypt/Decrypt block
         public Binary EncryptBlock(Binary value) {
             if (value.Length != 16) {
                 throw new ArgumentException($"AES block size on selected mode must 16 bytes (128 bits)");
             }
 
-            genKeySchedule();
-
             var state = value;
-            state = applyInitialRound(state);
-            for (int i = 0; i < rounds - 2; i++) {
-                state = applyNormalRound(state, i + 1);
+            state = ApplyInitialRound(state);
+            for (int i = 0; i < Rounds - 2; i++) {
+                state = ApplyNormalRound(state, i + 1);
             }
+            state = ApplyFinalRound(state);
 
-            return applyFinalRound(state);
+            return state;
         }
 
         public Binary DecryptBlock(Binary value)
@@ -86,28 +87,28 @@ namespace BobAndAlice.Core.Crypto.Symmetric
                 throw new ArgumentException($"AES block size on selected mode must 16 bytes (128 bits)");
             }
 
-            genKeySchedule();
-
             var state = value;
-            state = applyInvFinalRound(state);
-            for (int i = rounds - 2; i >= 0; i--) {
-                state = applyInvNormalRound(state, i + 1);
+            state = ApplyInvFinalRound(state);
+            for (int i = Rounds - 3; i >= 0; i--) {
+                state = ApplyInvNormalRound(state, i + 1);
             }
+            state = ApplyInvInitialRound(state);
 
-            return applyInvInitialRound(state); 
+            return state; 
         }
-        
-        #region Round types
-        private Binary applyInitialRound(Binary state) {
+        #endregion
+
+        #region Rounds
+        public Binary ApplyInitialRound(Binary state) {
             return AddRoundKey(state, 0);
         }
 
-        private Binary applyInvInitialRound(Binary state)
+        public Binary ApplyInvInitialRound(Binary state)
         {
             return AddRoundKey(state, 0);
         }
         
-        private Binary applyNormalRound(Binary state, int round) {
+        public Binary ApplyNormalRound(Binary state, int round) {
             var result = state;
 
             result = SubBytes(result);
@@ -118,7 +119,7 @@ namespace BobAndAlice.Core.Crypto.Symmetric
             return result;
         }
 
-        private Binary applyInvNormalRound(Binary state, int round)
+        public Binary ApplyInvNormalRound(Binary state, int round)
         {
             var result = state;
 
@@ -130,21 +131,21 @@ namespace BobAndAlice.Core.Crypto.Symmetric
             return result;   
         }
 
-        private Binary applyFinalRound(Binary state) {
+        public Binary ApplyFinalRound(Binary state) {
             var result = state;
 
             result = SubBytes(result);
             result = ShiftRows(result);
-            result = AddRoundKey(result, rounds - 1);
+            result = AddRoundKey(result, Rounds - 1);
 
             return result;
         }
 
-        private Binary applyInvFinalRound(Binary state)
+        public Binary ApplyInvFinalRound(Binary state)
         {
             var result = state;
 
-            result = AddRoundKey(result, rounds - 1);
+            result = AddRoundKey(result, Rounds - 1);
             result = InvShiftRows(result);
             result = InvSubBytes(result);
             
@@ -266,12 +267,12 @@ namespace BobAndAlice.Core.Crypto.Symmetric
         #region AddRoundKey
         public Binary AddRoundKey(Binary state, int round)
         {
-            var roundKey = new Binary( new List<uint>()
+            var roundKey = new Binary(new List<uint>()
             {
                 keyScheduleWords[round * 4],
-                keyScheduleWords[round*4 + 1],
-                keyScheduleWords[round*4 + 2],
-                keyScheduleWords[round*4 + 3]
+                keyScheduleWords[round * 4 + 1],
+                keyScheduleWords[round * 4 + 2],
+                keyScheduleWords[round * 4 + 3]
             });
             return state ^ roundKey;
         }
@@ -282,9 +283,10 @@ namespace BobAndAlice.Core.Crypto.Symmetric
         // https://en.wikipedia.org/wiki/AES_key_schedule
         void genKeySchedule() {
             keyScheduleWords.Clear();
+
             // Each round needs a derived key composed of 4 32-bit word
             // So, for instance, we need a key schedule of 11 * 4 = 44 32-bits words for derived keys on AES-128
-            for (int i = 0; i < keyWordsLength * rounds; i++) {
+            for (int i = 0; i < keyWordsLength * Rounds; i++) {
                 UInt32 nextWord = 0;
 
                 // For the first 4 words, we just copy from the key
@@ -298,7 +300,7 @@ namespace BobAndAlice.Core.Crypto.Symmetric
 
                     if (i % keyWordsLength == 0) {
                         nextWord ^= subWord(rotWord(previousWord));
-                        nextWord ^= Constants.AES.RoundConstants[i / keyWordsLength];
+                        nextWord ^= Constants.AES.RoundConstants[i / keyWordsLength - 1];
                     } else if (keyWordsLength > 6 && i % keyWordsLength == 4) {
                         nextWord ^= subWord(previousWord);
                     } else {

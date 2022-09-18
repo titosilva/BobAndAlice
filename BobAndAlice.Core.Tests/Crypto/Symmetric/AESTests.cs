@@ -16,10 +16,52 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
             var prng = new Prng();
             var aes = new AES(AES.AESSupportedKeySizes.Bits128, prng.Next(16).ToBinary());
             var randomBlock = prng.Next(16).ToBinary();
-            Assert.Equal(randomBlock, aes.DecryptBlock(aes.EncryptBlock(randomBlock)));
+            Assert.Equal(randomBlock.Content, aes.DecryptBlock(aes.EncryptBlock(randomBlock)).Content);
+        }
+
+        #endregion
+
+        #region Rounds
+        [Fact]
+        public void ApplyInvInitialRound__ShouldUndo__ApplyInitialRound()
+        {
+            var prng = new Prng();
+            var aes = new AES(AES.AESSupportedKeySizes.Bits128, prng.Next(16).ToBinary());
+
+            for (int i = 0; i <= 10; i++)
+            {
+                var state = prng.Next(16).ToBinary();
+                Assert.Equal(state.Content, aes.ApplyInvInitialRound(aes.ApplyInitialRound(state)).Content);
+            }
+        }
+
+        [Fact]
+        public void ApplyInvNormalRound__ShouldUndo__ApplyNormalRound()
+        {
+            var prng = new Prng();
+            var aes = new AES(AES.AESSupportedKeySizes.Bits128, prng.Next(16).ToBinary());
+
+            for (int round = 0; round < aes.Rounds; round++)
+            {
+                var state = prng.Next(16).ToBinary();
+                Assert.Equal(state.Content, aes.ApplyInvNormalRound(aes.ApplyNormalRound(state, round), round).Content);
+            }
+        }
+
+        [Fact]
+        public void ApplyInvFinalRound__ShouldUndo__ApplyFinalRound()
+        {
+            var prng = new Prng();
+            var aes = new AES(AES.AESSupportedKeySizes.Bits128, prng.Next(16).ToBinary());
+
+            for (int i = 0; i <= 10; i++)
+            {
+                var state = prng.Next(16).ToBinary();
+                Assert.Equal(state.Content, aes.ApplyInvFinalRound(aes.ApplyFinalRound(state)).Content);
+            }
         }
         #endregion
-        
+
         #region SubBytes
         [Fact]
         public void SubByte__ShouldReturnByte__BasedOnSBoxTable()
