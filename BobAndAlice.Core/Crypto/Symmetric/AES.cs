@@ -318,7 +318,7 @@ namespace BobAndAlice.Core.Crypto.Symmetric
             // Each round needs a derived key composed of 4 32-bit word
             // So, for instance, we need a key schedule of 11 * 4 = 44 32-bits words for derived keys on AES-128
             for (int i = 0; i < 4 * Rounds; i++) {
-                UInt32 nextWord = 0;
+                uint nextWord;
 
                 // For the first 4 words, we just copy from the key
                 if (i < KeyWordsSize) {

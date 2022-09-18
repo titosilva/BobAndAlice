@@ -118,9 +118,9 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
             var testPairs = new List<(byte Input, byte ExpectedOutput)>()
             { (0x9a, 0xb8), (0x0f, 0x76),  (0xf8, 0x41), (0xbe, 0xae), };
 
-            foreach (var pair in testPairs)
+            foreach (var (input, expectedOutput) in testPairs)
             {
-                Assert.Equal(pair.ExpectedOutput, AES.SubByte(pair.Input));
+                Assert.Equal(expectedOutput, AES.SubByte(input));
             }
         }
 
@@ -130,9 +130,9 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
             var testPairs = new List<(byte ExpectedOutput, byte Input)>()
                 {(0x9a, 0xb8), (0x0f, 0x76), (0xf8, 0x41), (0xbe, 0xae),};
 
-            foreach (var pair in testPairs)
+            foreach (var (expectedOutput, input) in testPairs)
             {
-                Assert.Equal(pair.ExpectedOutput, AES.InvSubByte(pair.Input));
+                Assert.Equal(expectedOutput, AES.InvSubByte(input));
             }
         }
         #endregion
