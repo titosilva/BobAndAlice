@@ -1,8 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BobAndAlice.Core", "BobAndAlice.Core\BobAndAlice.Core.csproj", "{1C06C420-938D-42E7-9840-FABC91BAA73E}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BobAndAlice.Core", "BobAndAlice.Core\BobAndAlice.Core.csproj", "{1C06C420-938D-42E7-9840-FABC91BAA73E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BobAndAlice.Core.Tests", "BobAndAlice.Core.Tests\BobAndAlice.Core.Tests.csproj", "{DC923FAE-1298-422A-83FC-B39AAD3A532A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BobAndAlice.Core.Tests", "BobAndAlice.Core.Tests\BobAndAlice.Core.Tests.csproj", "{DC923FAE-1298-422A-83FC-B39AAD3A532A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BobAndAlice.App", "BobAndAlice.App\BobAndAlice.App.csproj", "{F18393D0-4CE6-4529-9EEF-2ECBBFA4BC48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +23,15 @@ Global
 		{DC923FAE-1298-422A-83FC-B39AAD3A532A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC923FAE-1298-422A-83FC-B39AAD3A532A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC923FAE-1298-422A-83FC-B39AAD3A532A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F18393D0-4CE6-4529-9EEF-2ECBBFA4BC48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F18393D0-4CE6-4529-9EEF-2ECBBFA4BC48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F18393D0-4CE6-4529-9EEF-2ECBBFA4BC48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F18393D0-4CE6-4529-9EEF-2ECBBFA4BC48}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EA041D66-1C7D-40B3-AA14-113DE04B64DE}
 	EndGlobalSection
 EndGlobal

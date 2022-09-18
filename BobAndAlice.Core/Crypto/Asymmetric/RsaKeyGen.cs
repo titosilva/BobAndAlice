@@ -14,9 +14,14 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
 
         public static RsaKeyPair GenerateKeys(int primeBytesSize = 128)
         {
-            var p = generateKey(primeBytesSize);
-            var q = generateKey(primeBytesSize);
+            var p = generatePrime(primeBytesSize);
+            var q = generatePrime(primeBytesSize);
 
+            return GenerateKeysFromPrimes(p, q, primeBytesSize);
+        }
+
+        public static RsaKeyPair GenerateKeysFromPrimes(BigInteger p, BigInteger q, int primeBytesSize)
+        {
             var modulus = p * q;
             var modulusPhi = (p - 1) * (q - 1);
 
@@ -42,7 +47,7 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
         }
 
 
-        private static BigInteger generateKey(int keyBytesSize)
+        private static BigInteger generatePrime(int primeBytesSize)
         {
 
             if (tryGetAlreadyGeneratedPrime(out var prime))
@@ -55,7 +60,7 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
 
             while (true)
             {
-                fillQueueWithPossiblePrimes(queue, prng, keyBytesSize);
+                fillQueueWithPossiblePrimes(queue, prng, primeBytesSize);
 
                 Parallel.ForEach(queue, (x, i) =>
                 {
