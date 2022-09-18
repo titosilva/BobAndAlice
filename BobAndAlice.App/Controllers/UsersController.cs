@@ -7,7 +7,7 @@ using static BobAndAlice.App.Filters.AppExceptionFilter;
 
 namespace BobAndAlice.App.Controllers
 {
-    [Route("api/users")]
+    [Route("/api/users")]
     [ApiController]
     [AppExceptionFilter]
     public class UsersController : ControllerBase

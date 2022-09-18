@@ -1,0 +1,13 @@
+<mat-sidenav-container class="app-container">
+  <mat-sidenav class="sidenav px-3 pt-2" mode="side" opened>
+    <h3 class="mb-3">Bob & Alice</h3>
+
+    <div class="d-flex flex-column">
+      <a routerLink="/user/login">Login</a>
+      <a routerLink="/user/create">Criar usuário</a>
+    </div>
+  </mat-sidenav>
+  <mat-sidenav-content class="px-3 pt-2">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

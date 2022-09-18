@@ -1,0 +1,29 @@
+<div class="d-flex flex-column">
+    <h3 class="my-5">Login</h3>
+
+    <form class="d-flex flex-column col-8" [formGroup]="form">
+        <mat-form-field appearance="outline">
+            <mat-label>CPF</mat-label>
+            <input matInput type="text" inputmode="numeric" name="cpf" maxlength="11" formControlName="cpf">
+            <mat-error>{{ getError('cpf') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Senha</mat-label>
+            <input matInput type="password" formControlName="password">
+            <mat-error>{{ getError('password') }}</mat-error>
+        </mat-form-field>
+
+        <div class="d-flex flex-row col-12">
+            <button mat-flat-button color="primary" type="button" class="col-3" (click)="submit()">
+                <mat-icon>login</mat-icon>
+                Entrar
+            </button>
+    
+            <a routerLink="/user/create" mat-stroked-button color="primary" type="button" 
+            class="d-flex flex-row align-items-center justify-content-center col-3 mx-3">
+                <mat-icon>person_add</mat-icon>
+                Não tenho usuário
+            </a>
+        </div>
+    </form>
+</div>

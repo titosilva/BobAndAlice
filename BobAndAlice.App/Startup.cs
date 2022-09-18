@@ -31,6 +31,14 @@ namespace BobAndAlice.App
         {
 
             services.AddControllers();
+
+            services.AddCors(o => o.AddPolicy("CORSPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
+
             services.AddDbContext<AppDbContext>(options =>
             {
                 var folder = Environment.SpecialFolder.LocalApplicationData;
@@ -47,6 +55,7 @@ namespace BobAndAlice.App
             services.AddScoped<UserKeyRepository>();
 
             // Services
+            services.AddScoped<ModelConverter>();
             services.AddScoped<UserService>();
             services.AddScoped<UserKeyService>();
         }
@@ -62,6 +71,8 @@ namespace BobAndAlice.App
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("CORSPolicy");
 
             app.UseAuthorization();
 
