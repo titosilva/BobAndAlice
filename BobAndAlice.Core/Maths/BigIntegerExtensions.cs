@@ -22,11 +22,11 @@ namespace BobAndAlice.Core.Maths
                 var quotient = r / newr;
                 var temp = newt;
 
-                newt = t - quotient* newt;
+                newt = t - quotient * newt;
                 t = temp;
 
                 temp = newr;
-                newr = r - quotient* newr;
+                newr = r - quotient * newr;
                 r = temp;
             }
 

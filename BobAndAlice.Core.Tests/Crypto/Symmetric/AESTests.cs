@@ -141,25 +141,25 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
         [Fact]
         public void ShiftRow__ShouldReturnWord__ProperlyShifted()
         {
-            Assert.Equal((UInt32) 0x01020304, AES.ShiftRow(0x01020304, 0));
-            Assert.Equal((UInt32) 0x02030401, AES.ShiftRow(0x01020304, 1));
-            Assert.Equal((UInt32) 0x03040102, AES.ShiftRow(0x01020304, 2));
-            Assert.Equal((UInt32) 0x04010203, AES.ShiftRow(0x01020304, 3)); 
-            Assert.Equal((UInt32) 0x2F9392C0, AES.ShiftRow(0xC02F9392, 1));
-            Assert.Equal((UInt32) 0xAFC7AB30, AES.ShiftRow(0xAB30AFC7, 2));
-            Assert.Equal((UInt32) 0xA220CB2B, AES.ShiftRow(0x20CB2BA2, 3));
+            Assert.Equal((UInt32)0x01020304, AES.ShiftRow(0x01020304, 0));
+            Assert.Equal((UInt32)0x02030401, AES.ShiftRow(0x01020304, 1));
+            Assert.Equal((UInt32)0x03040102, AES.ShiftRow(0x01020304, 2));
+            Assert.Equal((UInt32)0x04010203, AES.ShiftRow(0x01020304, 3));
+            Assert.Equal((UInt32)0x2F9392C0, AES.ShiftRow(0xC02F9392, 1));
+            Assert.Equal((UInt32)0xAFC7AB30, AES.ShiftRow(0xAB30AFC7, 2));
+            Assert.Equal((UInt32)0xA220CB2B, AES.ShiftRow(0x20CB2BA2, 3));
         }
 
         [Fact]
         public void InvShiftRow__ShouldUndo__ShiftRow()
         {
-            Assert.Equal((UInt32) 0x01020304, AES.InvShiftRow(AES.ShiftRow(0x01020304, 0), 0));
-            Assert.Equal((UInt32) 0x01020304, AES.InvShiftRow(AES.ShiftRow(0x01020304, 1), 1));
-            Assert.Equal((UInt32) 0x01020304, AES.InvShiftRow(AES.ShiftRow(0x01020304, 2), 2));
-            Assert.Equal((UInt32) 0x01020304, AES.InvShiftRow(AES.ShiftRow(0x01020304, 3), 3)); 
-            Assert.Equal((UInt32) 0xC02F9392, AES.InvShiftRow(AES.ShiftRow(0xC02F9392, 1), 1));
-            Assert.Equal((UInt32) 0xAB30AFC7, AES.InvShiftRow(AES.ShiftRow(0xAB30AFC7, 2), 2));
-            Assert.Equal((UInt32) 0x20CB2BA2, AES.InvShiftRow(AES.ShiftRow(0x20CB2BA2, 3), 3));
+            Assert.Equal((UInt32)0x01020304, AES.InvShiftRow(AES.ShiftRow(0x01020304, 0), 0));
+            Assert.Equal((UInt32)0x01020304, AES.InvShiftRow(AES.ShiftRow(0x01020304, 1), 1));
+            Assert.Equal((UInt32)0x01020304, AES.InvShiftRow(AES.ShiftRow(0x01020304, 2), 2));
+            Assert.Equal((UInt32)0x01020304, AES.InvShiftRow(AES.ShiftRow(0x01020304, 3), 3));
+            Assert.Equal((UInt32)0xC02F9392, AES.InvShiftRow(AES.ShiftRow(0xC02F9392, 1), 1));
+            Assert.Equal((UInt32)0xAB30AFC7, AES.InvShiftRow(AES.ShiftRow(0xAB30AFC7, 2), 2));
+            Assert.Equal((UInt32)0x20CB2BA2, AES.InvShiftRow(AES.ShiftRow(0x20CB2BA2, 3), 3));
         }
         #endregion
 

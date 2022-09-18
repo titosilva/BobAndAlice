@@ -22,7 +22,7 @@ namespace BobAndAlice.Core.Tests.Maths
         public void MillerRabinTest__ShouldReturnFalse__ForSmallComposites()
         {
             var test = new MillerRabin();
-            
+
             Assert.False(test.IsPrime(6));
             Assert.False(test.IsPrime(91));
             Assert.False(test.IsPrime(8962));
@@ -34,15 +34,15 @@ namespace BobAndAlice.Core.Tests.Maths
         public void MillerRabinTest__ShouldReturnTrue__ForLargePrimes()
         {
             var test = new MillerRabin();
-            
+
             // 2 ^ 607 - 1
             var mersennePrime = (new BigInteger(1) << 607) - 1;
             Assert.True(test.IsPrime(mersennePrime));
-            
+
             // 2 ^ 521 - 1
             mersennePrime = (new BigInteger(1) << 521) - 1;
             Assert.True(test.IsPrime(mersennePrime));
-            
+
             // 2 ^ 1279 - 1
             mersennePrime = (new BigInteger(1) << 1279) - 1;
             Assert.True(test.IsPrime(mersennePrime));

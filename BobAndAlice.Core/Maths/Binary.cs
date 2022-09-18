@@ -38,19 +38,19 @@ namespace BobAndAlice.Core.Maths
 
             foreach (var word in words)
             {
-                Content.Add((byte) (word & 0xff));
-                Content.Add((byte) ((word >> 8) & 0xff));
-                Content.Add((byte) ((word >> 16) & 0xff));
-                Content.Add((byte) ((word >> 24) & 0xff));
+                Content.Add((byte)(word & 0xff));
+                Content.Add((byte)((word >> 8) & 0xff));
+                Content.Add((byte)((word >> 16) & 0xff));
+                Content.Add((byte)((word >> 24) & 0xff));
             }
         }
 
         public Binary(UInt32 word)
         {
-            Content.Add((byte) (word & 0xff));
-            Content.Add((byte) ((word >> 8) & 0xff));
-            Content.Add((byte) ((word >> 16) & 0xff));
-            Content.Add((byte) ((word >> 24) & 0xff));
+            Content.Add((byte)(word & 0xff));
+            Content.Add((byte)((word >> 8) & 0xff));
+            Content.Add((byte)((word >> 16) & 0xff));
+            Content.Add((byte)((word >> 24) & 0xff));
         }
         #endregion
 
@@ -106,7 +106,7 @@ namespace BobAndAlice.Core.Maths
         {
             var wordCount = Length % 4 == 0 ? (Length >> 2) : (Length >> 2) + 1;
             var result = new List<UInt32>();
-            
+
             for (int i = 0; i < wordCount; i++)
             {
                 var wordBytes = Content.Skip(i * 4).Take(4).ToList();
@@ -114,9 +114,9 @@ namespace BobAndAlice.Core.Maths
 
                 for (int j = 0; j < 4 && wordBytes.Count > j; j++)
                 {
-                    word |= (uint) (wordBytes[j] << (j * 8));
+                    word |= (uint)(wordBytes[j] << (j * 8));
                 }
-                
+
                 result.Add(word);
             }
 
@@ -126,7 +126,7 @@ namespace BobAndAlice.Core.Maths
 
         #region Operators
         public static Binary operator ^(Binary bin1, Binary bin2)
-            => new Binary(bin1.Content.Select((value, index) => (byte) (value ^ bin2.Content[index])).ToList());
+            => new Binary(bin1.Content.Select((value, index) => (byte)(value ^ bin2.Content[index])).ToList());
         #endregion
     }
 }

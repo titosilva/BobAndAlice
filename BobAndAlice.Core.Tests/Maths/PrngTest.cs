@@ -13,7 +13,7 @@ namespace BobAndAlice.Core.Tests.Maths
             for (var length = 1; length < 20; length++)
             {
                 var randomNumber = random.Next(length);
-                
+
                 Assert.True(randomNumber > BigInteger.Pow(2, (length - 1) * 8));
                 Assert.True(randomNumber < BigInteger.Pow(2, length * 8));
             }

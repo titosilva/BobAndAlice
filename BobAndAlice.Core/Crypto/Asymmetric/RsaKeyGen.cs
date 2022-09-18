@@ -40,7 +40,7 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
                 PrivateKey = new RsaKey(modulus, d.Value),
             };
         }
-            
+
 
         private static BigInteger generateKey(int keyBytesSize)
         {

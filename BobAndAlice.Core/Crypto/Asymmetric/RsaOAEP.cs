@@ -16,7 +16,7 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
         private readonly SHA3 H;
 
         public SHA3.SHA3SupportedBitSizes RandomValueSize { get; private set; }
-        public SHA3.SHA3SupportedBitSizes PaddedMessageSize { get; private set; } 
+        public SHA3.SHA3SupportedBitSizes PaddedMessageSize { get; private set; }
         public int PaddingBytesSize { get; private set; }
 
         public int MessageBytesSize

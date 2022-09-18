@@ -18,7 +18,7 @@ namespace BobAndAlice.Core.Maths
             {
                 var expBase = random.Next(2, maxRandomNumber);
                 var mod = BigInteger.ModPow(expBase, oddExponent, number);
-                
+
                 if (mod == 1 || mod == number - 1)
                 {
                     // The number might be prime

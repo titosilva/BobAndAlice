@@ -8,20 +8,24 @@ namespace BobAndAlice.Core.Maths
             if (b == 0x01)
             {
                 return a;
-            } else if (a == 0x01)
+            }
+            else if (a == 0x01)
             {
                 return b;
             }
-            
+
             byte p = 0;
 
-            for (int counter = 0; counter < 8; counter++) {
-                if ((b & 1) != 0) {
+            for (int counter = 0; counter < 8; counter++)
+            {
+                if ((b & 1) != 0)
+                {
                     p ^= a;
                 }
-                
+
                 a <<= 1;
-                if ((a & 0x80) != 0) {
+                if ((a & 0x80) != 0)
+                {
                     a ^= 0x1B; /* x^8 + x^4 + x^3 + x + 1 */
                 }
                 b >>= 1;

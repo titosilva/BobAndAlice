@@ -12,7 +12,7 @@ namespace BobAndAlice.Core.Tests.Maths
             var randomNumber = prng.Next(19).ToBinary();
             var randomNumberWords = randomNumber.ToWords();
 
-            Assert.Equal(5,randomNumberWords.Count);
+            Assert.Equal(5, randomNumberWords.Count);
             var wordIdx = 0;
             foreach (var word in randomNumberWords)
             {
@@ -22,7 +22,7 @@ namespace BobAndAlice.Core.Tests.Maths
                     {
                         break;
                     }
-                    
+
                     Assert.Equal(randomNumber.Content[wordIdx * 4 + i], (word >> (i * 8)) & 0xff);
                 }
 

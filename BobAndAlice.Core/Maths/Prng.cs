@@ -5,12 +5,12 @@ namespace BobAndAlice.Core.Maths
 {
     public class Prng
     {
-        private readonly Random _random = new Random(); 
-        
+        private readonly Random _random = new Random();
+
         public BigInteger Next(int bytesSize)
         {
             var result = new BigInteger(NextNonZeroByte());
-            
+
             for (int i = 1; i < bytesSize; i++)
             {
                 result <<= 8;
@@ -21,7 +21,7 @@ namespace BobAndAlice.Core.Maths
         }
 
         public byte NextByte()
-            => (byte) (_random.Next() & 0xff);
+            => (byte)(_random.Next() & 0xff);
 
         public byte NextNonZeroByte()
         {
