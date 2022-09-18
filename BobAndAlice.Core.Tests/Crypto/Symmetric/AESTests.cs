@@ -15,8 +15,12 @@ namespace BobAndAlice.Core.Tests.Crypto.Symmetric
         {
             var prng = new Prng();
             var aes = new AES(AES.AESSupportedKeySizes.Bits128, prng.Next(16).ToBinary());
-            var randomBlock = prng.Next(16).ToBinary();
-            Assert.Equal(randomBlock.Content, aes.DecryptBlock(aes.EncryptBlock(randomBlock)).Content);
+
+            for (int i = 0; i < 10; i++)
+            {
+                var randomBlock = prng.Next(16).ToBinary();
+                Assert.Equal(randomBlock.Content, aes.DecryptBlock(aes.EncryptBlock(randomBlock)).Content);
+            }
         }
 
         #endregion
