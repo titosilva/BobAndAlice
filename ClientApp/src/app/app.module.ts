@@ -32,6 +32,7 @@ import { SignatureListComponent } from './components/signatures/signature-list/s
 import { FileUploadComponent } from './components/file/file-upload/file-upload.component';
 import { SignatureDetailsComponent } from './components/signatures/signature-details/signature-details.component';
 import { PropertyComponent } from './components/layout/property/property.component';
+import { SignatureViewerComponent } from './components/signatures/signature-viewer/signature-viewer.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { PropertyComponent } from './components/layout/property/property.compone
     FileUploadComponent,
     SignatureDetailsComponent,
     PropertyComponent,
+    SignatureViewerComponent,
   ],
   imports: [
     BrowserModule,
