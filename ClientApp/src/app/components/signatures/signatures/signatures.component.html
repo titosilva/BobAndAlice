@@ -1,9 +1,9 @@
 <div class="d-flex flex-column" *ngIf="!route.firstChild">
     <ngx-loading [show]="loading"></ngx-loading>
-    <h3 class="my-5">Assinaturas</h3>
+    <h3 class="my-5">Assinar</h3>
     
     <div class="d-flex flex-row">
-        <app-file-upload content="Nova assinatura" icon="add" (onFileUploaded)="createNewSignature($event)"></app-file-upload>
+        <app-file-upload content="Selecionar arquivo" icon="upload" (onFileUploaded)="createNewSignature($event)"></app-file-upload>
     </div>
     
 </div>

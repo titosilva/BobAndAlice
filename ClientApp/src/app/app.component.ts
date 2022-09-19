@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
     name: 'Minhas chaves',
     ref: '/keys',
   }, {
-    name: 'Minhas assinaturas',
+    name: 'Assinar',
     ref: '/signatures',
   }, {
     name: 'Verificar assinatura',
