@@ -4,6 +4,7 @@ using BobAndAlice.App.Filters;
 using BobAndAlice.App.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -56,6 +57,16 @@ namespace BobAndAlice.App
             });
 
             // Configuration
+            // Reference: https://stackoverflow.com/questions/40364226/multipart-body-length-limit-exceeded-exception
+            // (doing this only for demonstration purposes)
+            services.Configure<FormOptions>(x =>
+            {
+                x.ValueCountLimit = int.MaxValue;
+                x.ValueLengthLimit = int.MaxValue;
+                x.MultipartBoundaryLengthLimit = int.MaxValue;
+                x.MultipartBodyLengthLimit = int.MaxValue;
+            });
+
             services.Configure<AppConfiguration>(Configuration.GetSection("AppConfiguration"));
 
             // Repositories

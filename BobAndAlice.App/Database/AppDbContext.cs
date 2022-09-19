@@ -11,5 +11,6 @@ namespace BobAndAlice.App.Database
 
         public DbSet<User> Users { get; set; }
         public DbSet<UserKey> UserKeys { get; set; }
+        public DbSet<UserSignature> UserSignatures { get; set; }
     }
 }

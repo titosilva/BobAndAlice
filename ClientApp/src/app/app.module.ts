@@ -27,6 +27,9 @@ import { KeysComponent } from './components/keys/keys/keys.component';
 import { VerificationComponent } from './components/verification/verification/verification.component';
 import { KeysListComponent } from './components/keys/keys-list/keys-list.component';
 import { CreateKeyComponent } from './components/keys/create-key/create-key.component';
+import { SignatureListComponent } from './components/signatures/signature-list/signature-list.component';
+import { CreateSignatureComponent } from './components/signatures/create-signature/create-signature.component';
+import { FileUploadComponent } from './components/file/file-upload/file-upload.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +40,10 @@ import { CreateKeyComponent } from './components/keys/create-key/create-key.comp
     KeysComponent,
     VerificationComponent,
     KeysListComponent,
-    CreateKeyComponent
+    CreateKeyComponent,
+    SignatureListComponent,
+    CreateSignatureComponent,
+    FileUploadComponent
   ],
   imports: [
     BrowserModule,

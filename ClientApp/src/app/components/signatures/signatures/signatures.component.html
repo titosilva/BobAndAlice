@@ -1,1 +1,10 @@
-<p>signatures works!</p>
+<div class="d-flex flex-column" *ngIf="!route.firstChild">
+    <h3 class="my-5">Assinaturas</h3>
+    
+    <div class="d-flex flex-row">
+        <app-file-upload content="Nova assinatura" icon="add" (onFileUploaded)="createNewSignature($event)"></app-file-upload>
+    </div>
+    
+</div>
+
+<router-outlet></router-outlet>

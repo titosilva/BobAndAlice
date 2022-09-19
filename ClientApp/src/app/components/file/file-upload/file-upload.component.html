@@ -1,0 +1,9 @@
+<ngx-loading [show]="loading"></ngx-loading>
+<input type="file" (change)="onChange($event)" hidden #fileInput>
+
+<button mat-flat-button color="primary" (click)="fileInput.click()">
+    <mat-icon *ngIf="icon">{{icon}}</mat-icon>
+    {{content}}
+</button>
+
+
