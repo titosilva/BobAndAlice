@@ -72,11 +72,15 @@ namespace BobAndAlice.App
             // Repositories
             services.AddScoped<UserRepository>();
             services.AddScoped<UserKeyRepository>();
+            services.AddScoped<UserSignatureRepository>();
 
             // Services
             services.AddScoped<ModelConverter>();
+            services.AddScoped<FileService>();
+
             services.AddScoped<UserService>();
             services.AddScoped<UserKeyService>();
+            services.AddScoped<SignatureService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

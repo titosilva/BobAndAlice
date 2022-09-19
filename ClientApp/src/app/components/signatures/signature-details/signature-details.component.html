@@ -1,0 +1,27 @@
+<div class="d-flex flex-column">
+    <h3 class="my-5">Detalhes da assinatura</h3>
+    
+    <div class="d-flex flex-row">
+        <a mat-flat-button color="primary" routerLink="/signatures">
+            Retornar
+        </a>
+    </div>
+    
+    <mat-card class="d-flex flex-column mt-3">
+        <h4 *ngIf="!signature.failure else signatureFailedTitle" class="d-flex flex-row align-items-center text-success">
+            Assinatura válida
+            <mat-icon class="mx-3">done</mat-icon>
+        </h4>
+        <ng-template #signatureFailedTitle>
+            <h4 *ngIf="signature.failure" class="d-flex flex-row align-items-center text-warning">
+                Assinatura inválida
+                <mat-icon class="mx-3">dangerous</mat-icon>
+            </h4>
+        </ng-template>
+
+        <div class="d-flex flex-column col-12 mt-5">
+            <h4>Arquivo encriptado (base64):</h4>
+            <p></p>
+        </div>
+    </mat-card>
+</div>

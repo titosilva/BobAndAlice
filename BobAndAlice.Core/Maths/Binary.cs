@@ -72,14 +72,23 @@ namespace BobAndAlice.Core.Maths
             }
         }
 
-        public List<Binary> Split(int splitBytesSize)
+        public List<byte[]> Split(int blockSize)
         {
-            var result = new List<Binary>();
+            var contentBytes = Content.ToArray();
+            var result = new List<byte[]>();
 
-            while (result.Sum(bin => bin.Length) < Length)
+            var blockIdx = 0;
+            while (blockIdx * blockSize < contentBytes.Length)
             {
-                var nextPiece = Content.Skip(result.Count * splitBytesSize).Take(splitBytesSize).ToList();
-                result.Add(new Binary(nextPiece));
+                var nextBlock = new byte[blockSize];
+
+                for (int i = 0; i < blockSize; i++)
+                {
+                    nextBlock[i] = contentBytes[blockIdx * blockSize + i];
+                }
+                
+                result.Add(nextBlock);
+                blockIdx++;
             }
 
             return result;
@@ -106,6 +115,9 @@ namespace BobAndAlice.Core.Maths
 
             return result;
         }
+
+        public byte[] ToByteArray()
+            => Content.ToArray();
 
         public List<UInt32> ToWords()
         {

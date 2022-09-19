@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { CreateKeyComponent } from './components/keys/create-key/create-key.component';
 import { KeysComponent } from './components/keys/keys/keys.component';
+import { SignatureDetailsComponent } from './components/signatures/signature-details/signature-details.component';
 import { SignaturesComponent } from './components/signatures/signatures/signatures.component';
 import { CreateComponent } from './components/user/create/create.component';
 import { LoginComponent } from './components/user/login/login.component';
@@ -10,6 +11,7 @@ import { LoggedInGuard } from './guards/logged-in.guard';
 
 
 const routes: Routes = [
+  { path: '', redirectTo: '/keys', pathMatch: 'full', canActivate: [LoggedInGuard] },
   { path: '', redirectTo: '/user/login', pathMatch: 'full' },
   {
     path: 'user/create',
@@ -39,11 +41,22 @@ const routes: Routes = [
     path: 'signatures',
     component: SignaturesComponent,
     canActivate: [LoggedInGuard],
+    children: [
+      {
+        path: ':id',
+        component: SignatureDetailsComponent,
+      }
+    ],
+  },
+  {
+    path: '**',
+    component: KeysComponent,
+    canActivate: [LoggedInGuard],
   },
   { 
     path: '**', 
     component: LoginComponent,
-  }
+  },
 ];
 
 @NgModule({

@@ -65,7 +65,7 @@ namespace BobAndAlice.Core.Crypto.Symmetric
                 // The user must pad their data themselves, so we don't affect theirs encodings
                 throw new ArgumentException("Please, provide an input with a bytes length divisible by 16");
             }
-            return new Binary(toEncryptBlocks.Select(block => EncryptBlock(block, key)).ToArray());
+            return new Binary(toEncryptBlocks.Select(block => EncryptBlock(new Binary(block), key)).ToArray());
         }
 
         public Binary Decrypt(Binary bin, Binary key)
@@ -78,7 +78,7 @@ namespace BobAndAlice.Core.Crypto.Symmetric
                 throw new ArgumentException("Please, provide an input with a bytes length divisible by 16");
             }
 
-            return new Binary(toDecryptBlocks.Select(block => DecryptBlock(block, key)).ToArray());
+            return new Binary(toDecryptBlocks.Select(block => DecryptBlock(new Binary(block), key)).ToArray());
         }
 
         #region Encrypt/Decrypt block

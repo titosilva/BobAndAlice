@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BobAndAlice.Core.Crypto.Asymmetric;
+using BobAndAlice.Core.Maths;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace BobAndAlice.App.Entities
@@ -25,5 +27,11 @@ namespace BobAndAlice.App.Entities
         public byte[] Modulus { get; private set; }
         public byte[] PublicKey { get; private set; }
         public byte[] PrivateKey { get; private set; }
+
+        public RsaKey PublicKeyObject
+            => new RsaKey(new Binary(Modulus).ToBigInteger(), new Binary(PublicKey).ToBigInteger());
+
+        public RsaKey PrivateKeyObject
+            => new RsaKey(new Binary(Modulus).ToBigInteger(), new Binary(PrivateKey).ToBigInteger());
     }
 }

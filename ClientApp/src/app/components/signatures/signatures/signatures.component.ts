@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FileModel } from '../../../api/files';
 import { SignatureService } from '../../../services/signature.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-signatures',
@@ -15,7 +16,9 @@ export class SignaturesComponent implements OnInit {
   constructor(
     public route: ActivatedRoute,
     private signatureService: SignatureService,
+    private userService: UserService,
     private snackBar: MatSnackBar,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -23,10 +26,13 @@ export class SignaturesComponent implements OnInit {
 
   createNewSignature(file: FileModel) {
     this.loading = true;
-    this.signatureService.createNewSignature(file).subscribe(
-      _ => {
+    this.signatureService.createNewSignature({
+      userId: this.userService.user.id,
+      file: file,
+    }).subscribe(
+      signature => {
         this.snackBar.open('Arquivo assinado com sucesso!');
-        this.loading = false;
+        this.router.navigateByUrl(`/signatures/${signature.id}`);
       }, err => {
         if (err.status == 418) {
           this.snackBar.open(err.error.message);

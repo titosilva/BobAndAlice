@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BobAndAlice.Core.Crypto.Signatures;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace BobAndAlice.App.Entities
@@ -9,14 +10,15 @@ namespace BobAndAlice.App.Entities
 
         public UserSignature() { }
 
-        public UserSignature(User user, string fileName, byte[] encryptedData, byte[] signatureData, byte[] publicKey)
+        public UserSignature(User user, string fileName, Signature signature)
         {
             Id = Guid.NewGuid();
-            User = user;
+            UserId = user.Id;
             FileName = fileName;
-            EncryptedData = encryptedData;
-            SignatureData = signatureData;
-            PublicKey = publicKey;
+            EncryptedData = signature.EncryptedMessage.ToByteArray();
+            SignatureData = signature.SignedHashAndParameters.ToByteArray();
+            PublicKeyModulus = signature.SignerPublicKey.Modulus.ToByteArray();
+            PublicKey = signature.SignerPublicKey.Value.ToByteArray();
         }
 
         [Key]
@@ -35,6 +37,9 @@ namespace BobAndAlice.App.Entities
 
         [Required]
         public byte[] SignatureData { get; private set; }
+
+        [Required]
+        public byte[] PublicKeyModulus { get; private set; }
 
         [Required]
         public byte[] PublicKey { get; private set; }

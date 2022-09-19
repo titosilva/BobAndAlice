@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FileModel } from '../api/files';
-import { SignatureModel } from '../api/signature';
+import { SignatureData, SignatureModel } from '../api/signature';
 
 const apiBase = "/api/signatures";
 
@@ -15,7 +15,11 @@ export class SignatureService {
     private http: HttpClient,
   ) { }
 
-  createNewSignature(file: FileModel): Observable<SignatureModel> {
-    return this.http.post<SignatureModel>(`${apiBase}`, file);
+  createNewSignature(data: SignatureData): Observable<SignatureModel> {
+    return this.http.post<SignatureModel>(`${apiBase}`, data);
+  }
+
+  getSignature(id: string): Observable<SignatureModel> {
+    return this.http.get<SignatureModel>(`${apiBase}/${id}`);
   }
 }

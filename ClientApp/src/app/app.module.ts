@@ -16,6 +16,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTableModule } from '@angular/material/table';
+import { MatCardModule } from '@angular/material/card';
 
 import { NgxLoadingModule } from 'ngx-loading';
 
@@ -28,8 +29,8 @@ import { VerificationComponent } from './components/verification/verification/ve
 import { KeysListComponent } from './components/keys/keys-list/keys-list.component';
 import { CreateKeyComponent } from './components/keys/create-key/create-key.component';
 import { SignatureListComponent } from './components/signatures/signature-list/signature-list.component';
-import { CreateSignatureComponent } from './components/signatures/create-signature/create-signature.component';
 import { FileUploadComponent } from './components/file/file-upload/file-upload.component';
+import { SignatureDetailsComponent } from './components/signatures/signature-details/signature-details.component';
 
 @NgModule({
   declarations: [
@@ -42,8 +43,8 @@ import { FileUploadComponent } from './components/file/file-upload/file-upload.c
     KeysListComponent,
     CreateKeyComponent,
     SignatureListComponent,
-    CreateSignatureComponent,
-    FileUploadComponent
+    FileUploadComponent,
+    SignatureDetailsComponent,
   ],
   imports: [
     BrowserModule,
@@ -61,6 +62,7 @@ import { FileUploadComponent } from './components/file/file-upload/file-upload.c
     MatListModule,
     MatDividerModule,
     MatTableModule,
+    MatCardModule,
 
     NgxLoadingModule.forRoot({}),
   ],

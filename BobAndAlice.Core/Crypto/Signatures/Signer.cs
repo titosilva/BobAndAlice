@@ -75,26 +75,38 @@ namespace BobAndAlice.Core.Crypto.Signatures
             rsa = new RsaOAEP(SHA3.SHA3SupportedBitSizes.Bits512, RsaPaddingSize);
         }
 
+        public Signer(SignerModes mode)
+        {
+            Mode = mode;
+
+            aes = new AES(AesKeySize);
+            prng = new Prng();
+            messageDigest = new SHA3(HashSize);
+
+            // Use 512 bits for signature (hash + aes key + aes padding)
+            rsa = new RsaOAEP(SHA3.SHA3SupportedBitSizes.Bits512, RsaPaddingSize);
+        }
+
         public Signature Sign(Binary message)
-            => new Signature()
+            => SignaturePrivateKey != null && SignaturePublicKey != null? new Signature()
             {
                 EncryptedMessage = aesEncryptWithRandomKey(message, out var aesKey, out var paddingSize),
                 SignedHashAndParameters = sign(generateDataToSign(message, aesKey, paddingSize)),
                 SignerPublicKey = SignaturePublicKey,
-            };
+            } : throw new Exception("Keys are not set");
 
         public bool VerifySignature(Signature signature, out Binary decryptedMessage)
         {
             decryptedMessage = null;
-            if (!tryDecryptSignature(signature.SignedHashAndParameters, signature.SignerPublicKey, out var decryptedSignature))
+            if (!TryDecryptSignature(signature.SignedHashAndParameters, signature.SignerPublicKey, out var decryptedSignature))
             {
                 return false;
             }
 
-            var (providedMessageHash, aesKey, aesPaddingSize) = readDecryptedSignature(decryptedSignature);
+            var (providedMessageHash, aesKey, aesPaddingSize) = ReadDecryptedSignature(decryptedSignature);
 
-            decryptedMessage = aesDecrypt(signature.EncryptedMessage, aesKey, aesPaddingSize);
-            var decryptedMessageHash = hashMessage(decryptedMessage);
+            decryptedMessage = AesDecrypt(signature.EncryptedMessage, aesKey, aesPaddingSize);
+            var decryptedMessageHash = HashMessage(decryptedMessage);
 
             return providedMessageHash == decryptedMessageHash;
         }
@@ -107,7 +119,7 @@ namespace BobAndAlice.Core.Crypto.Signatures
             return aes.Encrypt(paddedMessage, key);
         }
 
-        private Binary aesDecrypt(Binary encryptedMessage, Binary key, byte paddingSize)
+        public Binary AesDecrypt(Binary encryptedMessage, Binary key, byte paddingSize)
         {
             var paddedMessage = aes.Decrypt(encryptedMessage, key);
             return removePadding(paddedMessage, paddingSize);
@@ -115,17 +127,17 @@ namespace BobAndAlice.Core.Crypto.Signatures
         #endregion
 
         #region Hash and parameters
-        private Binary hashMessage(Binary message)
+        public Binary HashMessage(Binary message)
             => messageDigest.Hash(message);
 
         private Binary generateDataToSign(Binary message, Binary aesKey, byte aesPaddingSize)
         {
-            var messageHash = hashMessage(message);
+            var messageHash = HashMessage(message);
             var paddingSizeBin = new Binary(aesPaddingSize);
             return new Binary(messageHash, aesKey, paddingSizeBin);
         } 
 
-        private (Binary MessageHash, Binary AesKey, byte AesPaddingSize) readDecryptedSignature(Binary decryptedSignature)
+        public (Binary MessageHash, Binary AesKey, byte AesPaddingSize) ReadDecryptedSignature(Binary decryptedSignature)
             => (
                 new Binary(decryptedSignature.Content.Take(SHA3.ToBytesSize(HashSize)).ToList()),
                 new Binary(decryptedSignature.Content.Skip(SHA3.ToBytesSize(HashSize)).Take(AES.ToByteSize(AesKeySize)).ToList()),
@@ -135,7 +147,7 @@ namespace BobAndAlice.Core.Crypto.Signatures
         private Binary sign(Binary dataToSign)
             => rsa.Encrypt(dataToSign, SignaturePrivateKey);
 
-        private bool tryDecryptSignature(Binary signedData, RsaKey publicKey, out Binary decryptedSignature) {
+        public bool TryDecryptSignature(Binary signedData, RsaKey publicKey, out Binary decryptedSignature) {
             try
             {
                 decryptedSignature = rsa.Decrypt(signedData, publicKey);
