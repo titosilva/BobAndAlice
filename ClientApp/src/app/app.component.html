@@ -1,10 +1,15 @@
 <mat-sidenav-container class="app-container">
   <mat-sidenav class="sidenav px-3 pt-2" mode="side" opened>
-    <h3 class="mb-3">Bob & Alice</h3>
+    <h1 class="my-3 w-100 text-center">Bob & Alice</h1>
+
+    <mat-divider class="my-3 w-100"></mat-divider>
 
     <div class="d-flex flex-column">
-      <a routerLink="/user/login">Login</a>
-      <a routerLink="/user/create">Criar usuário</a>
+      <mat-nav-list color="primary" class="col-12">
+        <a mat-list-item [routerLink]="r.ref" *ngFor="let r of (isLogged? loggedRoutes : notLoggedRoutes)">
+          <h4 class="m-0">{{ r.name }}</h4>
+        </a>
+      </mat-nav-list>
     </div>
   </mat-sidenav>
   <mat-sidenav-content class="px-3 pt-2">

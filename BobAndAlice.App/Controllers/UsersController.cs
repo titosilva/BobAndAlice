@@ -1,15 +1,14 @@
-﻿using BobAndAlice.App.Models.User;
+﻿using BobAndAlice.App.Filters;
+using BobAndAlice.App.Models.User;
 using BobAndAlice.App.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using static BobAndAlice.App.Filters.AppExceptionFilter;
 
 namespace BobAndAlice.App.Controllers
 {
     [Route("/api/users")]
     [ApiController]
-    [AppExceptionFilter]
     public class UsersController : ControllerBase
     {
         private readonly UserService userService;
@@ -29,15 +28,10 @@ namespace BobAndAlice.App.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<LoginResponse> Login([FromBody] LoginRequest request)
+        public async Task<UserModel> Login([FromBody] LoginRequest request)
         {
-            var (result, user) = await userService.LoginAsync(request.Cpf, request.Password);
-
-            return new LoginResponse()
-            {
-                Result = result,
-                User = mc.ToModel(user),
-            };
+            var user = await userService.LoginAsync(request.Cpf, request.Password);
+            return mc.ToModel(user);
         }
     }
 }

@@ -40,7 +40,7 @@ namespace BobAndAlice.App.Entities
             => PasswordHash = SHA256.HashData(Encoding.UTF8.GetBytes(password.Trim()));
 
         public bool VerifyPassword(string providedPassword)
-            => PasswordHash == SHA256.HashData(Encoding.UTF8.GetBytes(providedPassword.Trim()));
+            => Convert.ToBase64String(PasswordHash) == Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(providedPassword.Trim())));
         #endregion
     }
 }

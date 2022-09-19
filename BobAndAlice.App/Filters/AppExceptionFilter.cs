@@ -1,21 +1,29 @@
 ﻿using BobAndAlice.App.Exceptions;
+using BobAndAlice.App.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Http.Filters;
 
 namespace BobAndAlice.App.Filters
 {
-    public class AppExceptionFilter
+    public class AppExceptionFilter : Microsoft.AspNetCore.Mvc.Filters.IExceptionFilter
     {
-        public class AppExceptionFilterAttribute : System.Web.Http.Filters.ExceptionFilterAttribute
+        public void OnException(ExceptionContext context)
         {
-            public override void OnException(HttpActionExecutedContext context)
+            var exceptionMessage = context.Exception.InnerException?.Message ?? context.Exception.Message;
+
+            if (context.Exception is AppException)
             {
-                if (context.Exception is AppException)
+                context.Result = new ObjectResult(new AppExceptionModel
                 {
-                    context.Response = new HttpResponseMessage(HttpStatusCode.BadRequest);
-                }
+                    Message = exceptionMessage,
+                }) { StatusCode = 418 };
+
+                context.ExceptionHandled = true;
             }
         }
     }

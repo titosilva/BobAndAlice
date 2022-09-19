@@ -29,7 +29,7 @@ namespace BobAndAlice.App.Services
 
             var alreadyExistingUser = await userRepository.GetUserByCpfOrDefaultAsync(cpf);
 
-            if (alreadyExistingUser == null)
+            if (alreadyExistingUser != null)
             {
                 throw new AppException($"Usuário com CPF {alreadyExistingUser.Cpf} já existe");
             }
@@ -41,16 +41,16 @@ namespace BobAndAlice.App.Services
             return user;
         }
 
-        public async Task<(LoginResults result, User user)> LoginAsync(string cpf, string password)
+        public async Task<User> LoginAsync(string cpf, string password)
         {
             var user = await userRepository.GetUserByCpfOrDefaultAsync(cpf);
 
             if (user == null)
             {
-                return (LoginResults.UserNotFound, null);
+                throw new AppException($"Usuário com CPF {cpf} não encontrado");
             }
 
-            return user.VerifyPassword(password)? (LoginResults.WrongPassword, null) : (LoginResults.Success, user);
+            return user.VerifyPassword(password) ? user : throw new AppException($"Senha incorreta");
         }
     }
 }

@@ -13,6 +13,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatListModule } from '@angular/material/list';
+import { MatDivider } from '@angular/material/divider';
 
 import { CreateComponent } from './components/user/create/create.component';
 import { LoginComponent } from './components/user/login/login.component';
@@ -37,6 +39,7 @@ import { APIInterceptor } from './api/api-interceptor';
     ReactiveFormsModule,
     HttpClientModule,
     MatSnackBarModule,
+    MatListModule,
   ],
   providers: [
     {

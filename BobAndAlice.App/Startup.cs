@@ -1,5 +1,6 @@
 using BobAndAlice.App.Configuration;
 using BobAndAlice.App.Database;
+using BobAndAlice.App.Filters;
 using BobAndAlice.App.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,6 +14,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BobAndAlice.App
@@ -30,7 +33,12 @@ namespace BobAndAlice.App
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers(options => options.Filters.Add<AppExceptionFilter>())
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
 
             services.AddCors(o => o.AddPolicy("CORSPolicy", builder =>
             {
@@ -41,7 +49,7 @@ namespace BobAndAlice.App
 
             services.AddDbContext<AppDbContext>(options =>
             {
-                var folder = Environment.SpecialFolder.LocalApplicationData;
+                var folder = Environment.SpecialFolder.Desktop;
                 var path = Environment.GetFolderPath(folder);
                 var dataSource = System.IO.Path.Join(path, "bobandalice.db");
                 options.UseSqlite($"Data Source={dataSource}");

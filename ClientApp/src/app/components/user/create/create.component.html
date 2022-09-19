@@ -8,6 +8,11 @@
             <mat-error>{{ getError('cpf') }}</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline">
+            <mat-label>Nome</mat-label>
+            <input matInput type="text" formControlName="name">
+            <mat-error>{{ getError('name') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
             <mat-label>Senha</mat-label>
             <input matInput type="password" formControlName="password">
             <mat-error>{{ getError('password') }}</mat-error>

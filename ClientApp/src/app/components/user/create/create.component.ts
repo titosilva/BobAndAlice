@@ -22,6 +22,7 @@ export class CreateComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       cpf: ['', [Validators.minLength(11), Validators.maxLength(11), Validators.pattern(/\d{11}/)]],
+      name: ['', [Validators.required]],
       password: ['', [Validators.required]],
     });
   }
@@ -49,12 +50,18 @@ export class CreateComponent implements OnInit {
 
     this.userService.createUser({
       cpf: this.form.value.cpf,
+      name: this.form.value.name,
       password: this.form.value.password,
     }).subscribe(
       user => {
         this.snackBar.open('Usuário criado com sucesso!');
+        this.router.navigateByUrl('/user/login');
       }, err => {
-        this.snackBar.open('Não foi possível criar o usuário');
+        if (err.status == 418) {
+          this.snackBar.open(err.error.message);
+        } else {
+          this.snackBar.open('Não foi possível criar o usuário');
+        }
       }
     )
   }

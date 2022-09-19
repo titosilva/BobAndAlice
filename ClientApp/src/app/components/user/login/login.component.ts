@@ -52,9 +52,13 @@ export class LoginComponent implements OnInit {
       password: this.form.value.password,
     }).subscribe(
       user => {
-        this.snackBar.open('Login com sucesso!');
+        this.snackBar.open('Login realizado com sucesso!');
       }, err => {
-        this.snackBar.open('Não foi possível criar o usuário');
+        if (err.status == 418) {
+          this.snackBar.open(err.error.message);
+        } else {
+          this.snackBar.open('Não foi possível efetuar o login');
+        }
       }
     )
   }
