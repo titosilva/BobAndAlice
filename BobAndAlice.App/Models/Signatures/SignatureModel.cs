@@ -5,6 +5,7 @@ namespace BobAndAlice.App.Models.Signatures
     public class SignatureModel
     {
         public Guid Id { get; set; }
+        public string FileName { get; set; }
 
         public string Failure { get; set; }
 
@@ -15,7 +16,7 @@ namespace BobAndAlice.App.Models.Signatures
 
         public string DecryptedDataBase64 { get; set; }
         public string DataHashBase64 { get; set; }
-        public string EncryptioKeyBase64 { get; set; }
+        public string EncryptionKeyBase64 { get; set; }
         public int EncryptionPaddingSize { get; set; }
     }
 }

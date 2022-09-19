@@ -1,6 +1,7 @@
 ﻿using BobAndAlice.App.Configuration;
 using BobAndAlice.App.Database;
 using BobAndAlice.App.Entities;
+using BobAndAlice.App.Exceptions;
 using BobAndAlice.App.Models.File;
 using BobAndAlice.App.Models.Signatures;
 using BobAndAlice.Core.Crypto.Asymmetric;
@@ -47,45 +48,85 @@ namespace BobAndAlice.App.Services
             var result = new SignatureModel()
             {
                 Id = userSignature.Id,
-                EncryptedDataBase64 = Base64.FromByteArray(userSignature.EncryptedData),
-                PublicKeyModulusBase64 = Base64.FromByteArray(userSignature.PublicKeyModulus),
-                PublicKeyBase64 = Base64.FromByteArray(userSignature.PublicKey),
-                SignatureParametersBase64 = Base64.FromByteArray(userSignature.SignatureData),
+                FileName = userSignature.FileName,
             };
+
+            return VerifySignatureAndFill(userSignature.Extract(), result);
+        }
+
+        public SignatureModel VerifySignatureAndFill(Signature signature, SignatureModel model)
+        {
+            model.EncryptedDataBase64 = Base64.FromByteArray(signature.EncryptedMessage.ToByteArray());
+            model.PublicKeyModulusBase64 = Base64.FromBigInteger(signature.SignerPublicKey.Modulus);
+            model.PublicKeyBase64 = Base64.FromBigInteger(signature.SignerPublicKey.Value);
+            model.SignatureParametersBase64 = Base64.FromByteArray(signature.SignedHashAndParameters.ToByteArray());
 
             var signer = new Signer(appConfig.Value.SignerMode);
 
-            var signedData = new Binary(userSignature.SignatureData);
-            var publicKey = new RsaKey(new BigInteger(userSignature.PublicKeyModulus), new BigInteger(userSignature.PublicKey));
-
-            if (!signer.TryDecryptSignature(signedData, publicKey, out var decryptedSignature))
+            if (!signer.TryDecryptSignature(signature.SignedHashAndParameters, signature.SignerPublicKey, out var decryptedSignature))
             {
-                result.Failure = "Não foi possível decriptar os campos da assinatura RSA";
-                return result;
+                model.Failure = "Não foi possível decriptar os campos da assinatura RSA";
+                return model;
             }
 
-            var signatureFields = signer.ReadDecryptedSignature(decryptedSignature);
+            (Binary MessageHash, Binary AesKey, byte AesPaddingSize) signatureFields;
+            try
+            {
+                signatureFields = signer.ReadDecryptedSignature(decryptedSignature);
+            } catch
+            {
+                model.Failure = "Os campos da assinatura não são válidos";
+                return model;
+            }
 
             Binary decryptedMessage;
             try
             {
-                decryptedMessage = signer.AesDecrypt(new Binary(userSignature.EncryptedData), signatureFields.AesKey, signatureFields.AesPaddingSize);
-            } catch
+                decryptedMessage = signer.AesDecrypt(new Binary(signature.EncryptedMessage), signatureFields.AesKey, signatureFields.AesPaddingSize);
+            }
+            catch
             {
-                result.Failure = "Não foi possível decriptar a mensagem cifrada com AES para verificação da assinatura";
-                return result;
+                model.Failure = "Não foi possível decriptar a mensagem cifrada com AES para verificação da assinatura";
+                return model;
             }
 
             var decryptedMessageBase64 = Base64.FromByteArray(decryptedMessage.ToByteArray());
             var messageHashBase64 = Base64.FromByteArray(signatureFields.MessageHash.ToByteArray());
 
-            result.Failure = Base64.FromByteArray(signer.HashMessage(decryptedMessage).ToByteArray()) == messageHashBase64 ? null : "O hash da mensagem decriptada não é igual ao hash da assinatura";
-            result.DataHashBase64 = messageHashBase64;
-            result.DecryptedDataBase64 = decryptedMessageBase64;
-            result.EncryptioKeyBase64 = Base64.FromByteArray(signatureFields.AesKey.ToByteArray());
-            result.EncryptionPaddingSize = signatureFields.AesPaddingSize;
+            model.Failure = Base64.FromByteArray(signer.HashMessage(decryptedMessage).ToByteArray()) == messageHashBase64 ? null : "O hash da mensagem decriptada não é igual ao hash da assinatura";
+            model.DataHashBase64 = messageHashBase64;
+            model.DecryptedDataBase64 = decryptedMessageBase64;
+            model.EncryptionKeyBase64 = Base64.FromByteArray(signatureFields.AesKey.ToByteArray());
+            model.EncryptionPaddingSize = signatureFields.AesPaddingSize;
 
-            return result;
+            return model;
+        }
+
+        public string ToJsonFileContent(Signature signature)
+            => new SignatureFileModel()
+            {
+                EncryptedData = Base64.FromByteArray(signature.EncryptedMessage.ToByteArray()),
+                Signature = Base64.FromByteArray(signature.SignedHashAndParameters.ToByteArray()),
+                PublicKeyModulus = Base64.FromBigInteger(signature.SignerPublicKey.Modulus),
+                PublicKeyValue = Base64.FromBigInteger(signature.SignerPublicKey.Value),
+            }.Serialize();
+
+        public Signature FromJsonFileContent(string s)
+        {
+            if (!SignatureFileModel.TryDeserialize(s, out var deserialized))
+            {
+                throw new AppException("Formato inválido de arquivo");
+            }
+
+            return new Signature()
+            {
+                EncryptedMessage = Base64.ToBinary(deserialized.EncryptedData),
+                SignedHashAndParameters = Base64.ToBinary(deserialized.Signature),
+                SignerPublicKey = new RsaKey(
+                    Base64.ToBigInteger(deserialized.PublicKeyModulus),
+                    Base64.ToBigInteger(deserialized.PublicKeyValue)
+                )
+            };
         }
     }
 }

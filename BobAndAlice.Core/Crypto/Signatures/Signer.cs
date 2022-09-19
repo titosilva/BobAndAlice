@@ -138,11 +138,11 @@ namespace BobAndAlice.Core.Crypto.Signatures
         } 
 
         public (Binary MessageHash, Binary AesKey, byte AesPaddingSize) ReadDecryptedSignature(Binary decryptedSignature)
-            => (
+            => decryptedSignature.Length == AES.ToByteSize(AesKeySize) + SHA3.ToBytesSize(HashSize) + 1? (
                 new Binary(decryptedSignature.Content.Take(SHA3.ToBytesSize(HashSize)).ToList()),
                 new Binary(decryptedSignature.Content.Skip(SHA3.ToBytesSize(HashSize)).Take(AES.ToByteSize(AesKeySize)).ToList()),
                 decryptedSignature.Content.Last()
-            );
+            ) : throw new ArgumentException("The provided value does not have the expected size");
 
         private Binary sign(Binary dataToSign)
             => rsa.Encrypt(dataToSign, SignaturePrivateKey);

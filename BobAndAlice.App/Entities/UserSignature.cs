@@ -1,6 +1,9 @@
-﻿using BobAndAlice.Core.Crypto.Signatures;
+﻿using BobAndAlice.Core.Crypto.Asymmetric;
+using BobAndAlice.Core.Crypto.Signatures;
+using BobAndAlice.Core.Maths;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Numerics;
 
 namespace BobAndAlice.App.Entities
 {
@@ -43,5 +46,13 @@ namespace BobAndAlice.App.Entities
 
         [Required]
         public byte[] PublicKey { get; private set; }
+
+        public Signature Extract()
+            => new Signature()
+            {
+                EncryptedMessage = new Binary(EncryptedData),
+                SignerPublicKey = new RsaKey(new BigInteger(PublicKeyModulus), new BigInteger(PublicKey)),
+                SignedHashAndParameters = new Binary(SignatureData),
+            };
     }
 }

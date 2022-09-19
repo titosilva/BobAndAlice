@@ -1,27 +1,59 @@
+<ngx-loading [show]="loading"></ngx-loading>
 <div class="d-flex flex-column">
     <h3 class="my-5">Detalhes da assinatura</h3>
     
     <div class="d-flex flex-row">
-        <a mat-flat-button color="primary" routerLink="/signatures">
+        <a mat-flat-button color="primary" class="mx-3" (click)="downloadSignedFile()">
+            <mat-icon>download_for_offline</mat-icon>
+            Baixar arquivo assinado (JSON)
+        </a>
+
+        <button mat-stroked-button color="primary" class="mx-3" (click)="downloadOriginalFile()">
+            <mat-icon>download</mat-icon>
+            Baixar arquivo original a partir da assinatura
+        </button>
+
+        <a mat-stroked-button color="primary" routerLink="/signatures">
+            <mat-icon>undo</mat-icon>
             Retornar
         </a>
     </div>
     
     <mat-card class="d-flex flex-column mt-3">
-        <h4 *ngIf="!signature.failure else signatureFailedTitle" class="d-flex flex-row align-items-center text-success">
-            Assinatura válida
-            <mat-icon class="mx-3">done</mat-icon>
-        </h4>
-        <ng-template #signatureFailedTitle>
-            <h4 *ngIf="signature.failure" class="d-flex flex-row align-items-center text-warning">
+        <ng-container *ngIf="!signature.failure else badSignature">
+            <h2 class="d-flex flex-row align-items-center text-success mx-3">
+                Assinatura válida
+                <mat-icon class="mx-3">done</mat-icon>
+            </h2>
+
+            <div class="d-flex flex-row col-12 mt-5 mx-3">
+                <div class="d-flex flex-column col-4">
+                    <app-property name="Chave pública RSA (base64)" class="col-12">
+                        Valor: {{ signature.publicKeyBase64 }} <br/> <br/>
+                        Módulo: {{ signature.publicKeyModulusBase64 }}
+                    </app-property>
+    
+                    <app-property name="Chave de criptografia simétrica (base64)" class="col-12 my-5">
+                        {{ signature.encryptionKeyBase64 }}
+                    </app-property>
+                </div>
+                <div class="d-flex flex-column col-4 mx-5">
+                    <app-property name="Assinatura (base64)" class="col-12">
+                        {{ signature.signatureParametersBase64 }}
+                    </app-property>
+    
+                    <app-property name="Hash do conteúdo do arquivo (base64)" class="col-12 my-5">
+                        {{ signature.dataHashBase64 }}
+                    </app-property>
+                </div>
+            </div>
+        </ng-container>
+
+        <ng-template #badSignature>
+            <h2 class="d-flex flex-row align-items-center text-warning mx-3">
                 Assinatura inválida
                 <mat-icon class="mx-3">dangerous</mat-icon>
-            </h4>
+            </h2>
         </ng-template>
-
-        <div class="d-flex flex-column col-12 mt-5">
-            <h4>Arquivo encriptado (base64):</h4>
-            <p></p>
-        </div>
     </mat-card>
 </div>

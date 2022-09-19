@@ -40,4 +40,11 @@ export class SignatureDetailsComponent implements OnInit {
     );
   }
 
+  downloadSignedFile() {
+    window.open(`https://localhost:5001/api/signatures/${this.signature.id}/file?fileName=${this.signature.fileName}`);
+  }
+  
+  downloadOriginalFile() {
+    window.open(`https://localhost:5001/api/signatures/${this.signature.id}/original-file?fileName=${this.signature.fileName}`);
+  }
 }

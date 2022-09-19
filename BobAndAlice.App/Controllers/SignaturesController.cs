@@ -2,9 +2,12 @@
 using BobAndAlice.App.Models;
 using BobAndAlice.App.Models.Signatures;
 using BobAndAlice.App.Services;
+using BobAndAlice.Core.Encoding;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace BobAndAlice.App.Controllers
@@ -39,6 +42,34 @@ namespace BobAndAlice.App.Controllers
         {
             var signature = await userSignatureRepository.GetRequiredUserSignatureAsync(id);
             return signatureService.VerifySignature(signature);
+        }
+
+        [HttpGet("{id}/original-file")]
+        public async Task<IActionResult> DownloadOriginalFile([FromRoute] Guid id, [FromQuery] string fileName/* For naming the downloaded file */)
+        {
+            var signature = await userSignatureRepository.GetRequiredUserSignatureAsync(id);
+            var signatureVerification = signatureService.VerifySignature(signature);
+            var fileBytes = Base64.ToByteArray(signatureVerification.DecryptedDataBase64);
+
+            var stream = new MemoryStream();
+            stream.Write(fileBytes);
+            stream.Position = 0;
+
+            return File(stream, "application/octet-stream", fileName);
+        }
+
+        [HttpGet("{id}/file")]
+        public async Task<IActionResult> DownloadFile([FromRoute] Guid id, [FromQuery] string fileName/* For naming the downloaded file */)
+        {
+            var userSignature = await userSignatureRepository.GetRequiredUserSignatureAsync(id);
+            var fileContents = signatureService.ToJsonFileContent(userSignature.Extract());
+            var fileBytes = Encoding.UTF8.GetBytes(fileContents);
+
+            var stream = new MemoryStream();
+            stream.Write(fileBytes);
+            stream.Position = 0;
+
+            return File(stream, "application/octet-stream", Path.ChangeExtension(fileName, ".json"));
         }
     }
 }
