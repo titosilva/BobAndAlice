@@ -10,6 +10,7 @@ namespace BobAndAlice.Core.Crypto.Signatures
 {
     public class Signature
     {
+        public string OriginalFileName { get; set; }
         public Binary EncryptedMessage { get; set; }
         public Binary SignedHashAndParameters { get; set; }
         public RsaKey SignerPublicKey { get; set; }

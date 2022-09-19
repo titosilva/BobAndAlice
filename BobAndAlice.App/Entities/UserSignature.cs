@@ -50,6 +50,7 @@ namespace BobAndAlice.App.Entities
         public Signature Extract()
             => new Signature()
             {
+                OriginalFileName = FileName,
                 EncryptedMessage = new Binary(EncryptedData),
                 SignerPublicKey = new RsaKey(new BigInteger(PublicKeyModulus), new BigInteger(PublicKey)),
                 SignedHashAndParameters = new Binary(SignatureData),

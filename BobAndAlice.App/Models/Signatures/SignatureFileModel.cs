@@ -4,6 +4,9 @@ namespace BobAndAlice.App.Models.Signatures
 {
     public class SignatureFileModel
     {
+        [JsonProperty("Arquivo")]
+        public string OriginalFileName { get; set; }
+
         [JsonProperty("Cifra")]
         public string EncryptedData { get; set; }
 

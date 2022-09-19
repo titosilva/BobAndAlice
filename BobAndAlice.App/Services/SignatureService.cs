@@ -9,8 +9,10 @@ using BobAndAlice.Core.Crypto.Signatures;
 using BobAndAlice.Core.Encoding;
 using BobAndAlice.Core.Maths;
 using Microsoft.Extensions.Options;
+using System;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace BobAndAlice.App.Services
@@ -105,6 +107,7 @@ namespace BobAndAlice.App.Services
         public string ToJsonFileContent(Signature signature)
             => new SignatureFileModel()
             {
+                OriginalFileName = signature.OriginalFileName,
                 EncryptedData = Base64.FromByteArray(signature.EncryptedMessage.ToByteArray()),
                 Signature = Base64.FromByteArray(signature.SignedHashAndParameters.ToByteArray()),
                 PublicKeyModulus = Base64.FromBigInteger(signature.SignerPublicKey.Modulus),
@@ -120,6 +123,7 @@ namespace BobAndAlice.App.Services
 
             return new Signature()
             {
+                OriginalFileName = deserialized.OriginalFileName,
                 EncryptedMessage = Base64.ToBinary(deserialized.EncryptedData),
                 SignedHashAndParameters = Base64.ToBinary(deserialized.Signature),
                 SignerPublicKey = new RsaKey(
@@ -127,6 +131,34 @@ namespace BobAndAlice.App.Services
                     Base64.ToBigInteger(deserialized.PublicKeyValue)
                 )
             };
+        }
+
+        public SignatureModel OpenAndVerifyFromFile(Guid fileId, string fileName)
+        {
+            var fileContents = fileService.ReadFile(fileId);
+            var signature = FromJsonFileContent(Encoding.UTF8.GetString(fileContents));
+            var result = new SignatureModel()
+            {
+                FileName = fileName,
+            };
+
+            return VerifySignatureAndFill(signature, result);
+        }
+
+        public (byte[] FileContent, string FileName) OpenAndDecryptFromFile(Guid fileId)
+        {
+            var fileContents = fileService.ReadFile(fileId);
+            var signature = FromJsonFileContent(Encoding.UTF8.GetString(fileContents));
+            var result = new SignatureModel() { };
+
+            var verification = VerifySignatureAndFill(signature, result);
+
+            if (!string.IsNullOrEmpty(verification.Failure))
+            {
+                throw new AppException("Assinatura inválida");
+            }
+
+            return (Convert.FromBase64String(verification.DecryptedDataBase64), signature.OriginalFileName);
         }
     }
 }

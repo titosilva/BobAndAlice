@@ -22,4 +22,12 @@ export class SignatureService {
   getSignature(id: string): Observable<SignatureModel> {
     return this.http.get<SignatureModel>(`${apiBase}/${id}`);
   }
+
+  openAndVerifySignatureFromFile(fileId: string): Observable<SignatureModel> {
+    return this.http.get<SignatureModel>(`${apiBase}/from-file`, {
+      params: {
+        fileId,
+      },
+    });
+  }
 }

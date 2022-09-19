@@ -71,5 +71,23 @@ namespace BobAndAlice.App.Controllers
 
             return File(stream, "application/octet-stream", Path.ChangeExtension(fileName, ".json"));
         }
+
+        [HttpGet("from-file")]
+        public SignatureModel OpenAndVerifyFile([FromQuery] Guid fileId, [FromQuery] string fileName/* For naming the downloaded file */)
+        {
+            return signatureService.OpenAndVerifyFromFile(fileId, fileName);
+        }
+
+        [HttpGet("from-file/download")]
+        public IActionResult OpenAndDecryptFile([FromQuery] Guid fileId, [FromQuery] string fileName/* For naming the downloaded file */)
+        {
+            var (fileBytes, originalFileName) = signatureService.OpenAndDecryptFromFile(fileId);
+
+            var stream = new MemoryStream();
+            stream.Write(fileBytes);
+            stream.Position = 0;
+
+            return File(stream, "application/octet-stream", originalFileName);
+        }
     }
 }

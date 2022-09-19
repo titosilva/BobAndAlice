@@ -1,1 +1,14 @@
-<p>verification works!</p>
+<div class="d-flex flex-column">
+    <ngx-loading [show]="loading"></ngx-loading>
+    <h3 class="my-5">Verificar assinatura</h3>
+    
+    <div class="d-flex flex-row">
+        <app-file-upload content="Selecionar arquivo" icon="file_upload" (onFileUploaded)="openAndVerify($event)"></app-file-upload>
+        <button mat-stroked-button color="primary" (click)="downloadDecrypted()" *ngIf="signature" class="mx-3">
+            <mat-icon>download</mat-icon>
+            Baixar arquivo decifrado
+        </button>
+    </div>
+    
+    <app-signature-viewer [signature]="signature" class="mt-3" *ngIf="signature"></app-signature-viewer>
+</div>
