@@ -1,0 +1,33 @@
+<ngx-loading [show]="loading"></ngx-loading>
+<div class="d-flex flex-column">
+    <h3 class="my-5">Criação de chave</h3>
+
+    <p>Insira os dois números primos a serem utilizados ou clique no botão para gerá-los automaticamente.</p>
+    <form class="d-flex flex-column col-9" [formGroup]="form">
+        <mat-form-field appearance="outline" class="col-12">
+            <mat-label>Número primo (Base64)</mat-label>
+            <textarea matInput rows="5" formControlName="prime1"></textarea>
+            <mat-error>{{ getError('prime1') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="col-12">
+            <mat-label>Número primo (Base64)</mat-label>
+            <textarea matInput rows="5" formControlName="prime2"></textarea>
+            <mat-error>{{ getError('prime2') }}</mat-error>
+        </mat-form-field>
+
+        <div class="d-flex flex-row">
+            <button mat-flat-button color="primary" class="col-3" (click)="createKeys()">
+                <mat-icon>add_circle</mat-icon>
+                Criar chaves
+            </button>
+            <button mat-stroked-button color="primary" class="col-3 mx-3" (click)="generatePrimes()">
+                <mat-icon>numbers</mat-icon>
+                Gerar primos aleatórios
+            </button>
+            <a routerLink="/keys" mat-stroked-button color="primary" class="col-3 mx-3">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+

@@ -13,7 +13,9 @@ export class UserService {
   private loggedSubject: Subject<UserModel> = new ReplaySubject<UserModel>(null);
   whenLogged: Observable<UserModel> = this.loggedSubject.asObservable();
 
-  user: UserModel;
+  get user(): UserModel {
+    return this.getStoredSession();
+  }
 
   get isLogged(): boolean {
     return this.user != null;
@@ -23,6 +25,19 @@ export class UserService {
     private http: HttpClient,
   ) { }
 
+  private getStoredSession(): UserModel {
+    try {
+      return JSON.parse(localStorage.getItem('bobandalice__user'));
+    } catch {
+      return null;
+    }
+  }
+
+  private storeSession(user: UserModel) {
+    localStorage.setItem('bobandalice__user', JSON.stringify(user));
+    this.loggedSubject.next(user);
+  }
+
   createUser(data: UserData): Observable<UserModel> {
     return this.http.post<UserModel>(`${apiBase}`, data);
   }
@@ -30,8 +45,7 @@ export class UserService {
   login(data: LoginRequest): Observable<UserModel> {
     return this.http.post<UserModel>(`${apiBase}/login`, data)
     .pipe(switchMap(user => {
-      this.loggedSubject.next(user);
-      this.user = user;
+      this.storeSession(user);
       return of(user);
     }));
   }

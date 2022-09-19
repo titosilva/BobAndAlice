@@ -1,0 +1,13 @@
+<div class="d-flex flex-column" *ngIf="!route.firstChild">
+    <h3 class="my-5">Chaves</h3>
+
+    <div class="d-flex flex-row">
+        <a routerLink="/keys/create" mat-flat-button color="primary">
+            <mat-icon>add</mat-icon>
+            Nova chave
+        </a>
+    </div>
+    <app-keys-list class="mx-5"></app-keys-list>
+</div>
+
+<router-outlet></router-outlet>

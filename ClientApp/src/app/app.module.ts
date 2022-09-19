@@ -14,17 +14,30 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatListModule } from '@angular/material/list';
-import { MatDivider } from '@angular/material/divider';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatTableModule } from '@angular/material/table';
+
+import { NgxLoadingModule } from 'ngx-loading';
 
 import { CreateComponent } from './components/user/create/create.component';
 import { LoginComponent } from './components/user/login/login.component';
 import { APIInterceptor } from './api/api-interceptor';
+import { SignaturesComponent } from './components/signatures/signatures/signatures.component';
+import { KeysComponent } from './components/keys/keys/keys.component';
+import { VerificationComponent } from './components/verification/verification/verification.component';
+import { KeysListComponent } from './components/keys/keys-list/keys-list.component';
+import { CreateKeyComponent } from './components/keys/create-key/create-key.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CreateComponent,
-    LoginComponent
+    LoginComponent,
+    SignaturesComponent,
+    KeysComponent,
+    VerificationComponent,
+    KeysListComponent,
+    CreateKeyComponent
   ],
   imports: [
     BrowserModule,
@@ -40,6 +53,10 @@ import { APIInterceptor } from './api/api-interceptor';
     HttpClientModule,
     MatSnackBarModule,
     MatListModule,
+    MatDividerModule,
+    MatTableModule,
+
+    NgxLoadingModule.forRoot({}),
   ],
   providers: [
     {

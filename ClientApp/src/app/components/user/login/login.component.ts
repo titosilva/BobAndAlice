@@ -53,6 +53,7 @@ export class LoginComponent implements OnInit {
     }).subscribe(
       user => {
         this.snackBar.open('Login realizado com sucesso!');
+        this.router.navigateByUrl('/keys');
       }, err => {
         if (err.status == 418) {
           this.snackBar.open(err.error.message);

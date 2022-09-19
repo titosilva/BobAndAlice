@@ -14,11 +14,13 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
 
         public static RsaKeyPair GenerateKeys(int primeBytesSize = 128)
         {
-            var p = generatePrime(primeBytesSize);
-            var q = generatePrime(primeBytesSize);
+            var (p, q) = GeneratePrimes(primeBytesSize);
 
             return GenerateKeysFromPrimes(p, q, primeBytesSize);
         }
+
+        public static (BigInteger P, BigInteger Q) GeneratePrimes(int primeBytesSize)
+            => (generatePrime(primeBytesSize), generatePrime(primeBytesSize));
 
         public static RsaKeyPair GenerateKeysFromPrimes(BigInteger p, BigInteger q, int primeBytesSize)
         {
@@ -31,7 +33,7 @@ namespace BobAndAlice.Core.Crypto.Asymmetric
             {
                 do
                 {
-                    e = prng.Next(primeBytesSize >> 2);
+                    e = prng.Next(primeBytesSize >> 1);
                 } while (BigInteger.GreatestCommonDivisor(e, modulusPhi) != 1);
 
                 d = e.ModInverse(modulusPhi);

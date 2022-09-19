@@ -1,7 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { CreateKeyComponent } from './components/keys/create-key/create-key.component';
+import { KeysComponent } from './components/keys/keys/keys.component';
+import { SignaturesComponent } from './components/signatures/signatures/signatures.component';
 import { CreateComponent } from './components/user/create/create.component';
 import { LoginComponent } from './components/user/login/login.component';
+import { VerificationComponent } from './components/verification/verification/verification.component';
+import { LoggedInGuard } from './guards/logged-in.guard';
 
 
 const routes: Routes = [
@@ -12,6 +17,31 @@ const routes: Routes = [
   },
   {
     path: 'user/login',
+    component: LoginComponent,
+  },
+  {
+    path: 'keys',
+    component: KeysComponent,
+    canActivate: [LoggedInGuard],
+    children: [
+      {
+        path: 'create',
+        component: CreateKeyComponent,
+      },
+    ],
+  },
+  {
+    path: 'verification',
+    component: VerificationComponent,
+    canActivate: [LoggedInGuard],
+  },
+  {
+    path: 'signatures',
+    component: SignaturesComponent,
+    canActivate: [LoggedInGuard],
+  },
+  { 
+    path: '**', 
     component: LoginComponent,
   }
 ];

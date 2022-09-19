@@ -40,7 +40,7 @@ namespace BobAndAlice.Core.Maths
                 t = t + modulus;
             }
 
-            return t;
+            return t % modulus;
         }
 
         public static Binary ToBinary(this BigInteger number)

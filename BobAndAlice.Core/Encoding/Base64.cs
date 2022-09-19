@@ -14,5 +14,11 @@ namespace BobAndAlice.Core.Encoding
 
         public static byte[] ToByteArray(string b64) 
             => Convert.FromBase64String(b64);
+
+        public static string FromBigInteger(BigInteger value)
+            => Convert.ToBase64String(value.ToByteArray());
+
+        public static string FromByteArray(byte[] value) 
+            => Convert.ToBase64String(value);
     }
 }

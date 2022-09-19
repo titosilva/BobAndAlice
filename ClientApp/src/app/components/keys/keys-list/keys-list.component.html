@@ -1,0 +1,39 @@
+<ngx-loading [show]="loading"></ngx-loading>
+
+<div class="d-flex align-items-center py-5" *ngIf="userKeys.length == 0 else keysTable">
+    <h4>Nenhuma chave encontrada</h4>
+</div>
+<ng-template #keysTable>
+    <mat-table class="my-5" [dataSource]="userKeys">
+        <!-- Position Column -->
+      <ng-container matColumnDef="modulus">
+        <th mat-header-cell *matHeaderCellDef class="col-3 py-1">Módulo (Base64)</th>
+        <td mat-cell *matCellDef="let key" class="col-3 py-1">
+          <p style="word-break: break-all;">
+            {{key.modulusBase64}}
+          </p>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="privateKey">
+        <th mat-header-cell *matHeaderCellDef class="col-3 px-3 py-1">Chave privada (Base64)</th>
+        <td mat-cell *matCellDef="let key" class="col-3 py-1">
+          <p style="word-break: break-all;" class="mx-3">
+            {{key.privateKeyBase64}}
+          </p>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="publicKey" class="col-3 py-1">
+        <th mat-header-cell *matHeaderCellDef>Chave pública (Base64)</th>
+        <td mat-cell *matCellDef="let key" class="col-3 py-1">
+          <p style="word-break: break-all;">
+            {{key.publicKeyBase64}}
+          </p>
+        </td>
+      </ng-container>
+    
+      <tr mat-header-row *matHeaderRowDef="['modulus', 'privateKey', 'publicKey']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['modulus', 'privateKey', 'publicKey'];"></tr>
+    </mat-table>
+</ng-template>

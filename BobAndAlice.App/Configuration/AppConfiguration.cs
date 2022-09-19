@@ -2,6 +2,6 @@
 {
     public class AppConfiguration
     {
-        public int RsaPrimeSizeBytes { get; set; } = 1025;
+        public int RsaPrimeSizeBytes { get; set; } = 129;
     }
 }
